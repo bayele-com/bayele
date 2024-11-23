@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [language, setLanguage] = useState("en");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,39 +39,52 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
-              <Link
-                to="#how-it-works"
-                className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
-              >
-                How It Works
-              </Link>
-              <Link
-                to="#features"
-                className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
-              >
-                Features
-              </Link>
-              <Link
-                to="#classifieds"
-                className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
-              >
-                Classifieds
-              </Link>
-              <Link
-                to="/login"
-                className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
-              >
-                Get Started
-              </Link>
-            </div>
+          <div className="hidden md:flex items-center space-x-8">
+            <Link
+              to="/how-it-works"
+              className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
+            >
+              How It Works
+            </Link>
+            <Link
+              to="/features"
+              className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
+            >
+              Features
+            </Link>
+            <Link
+              to="/classifieds"
+              className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
+            >
+              Classifieds
+            </Link>
+            <Link
+              to="/login"
+              className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
+            >
+              Login
+            </Link>
+            <Link
+              to="/signup"
+              className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
+            >
+              Get Started
+            </Link>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center space-x-1 text-gray-900">
+                <Globe className="w-4 h-4" />
+                <span className="text-sm">{language === "en" ? "EN" : "FR"}</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => setLanguage("en")}>
+                  English
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage("fr")}>
+                  Français
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="md:hidden">
@@ -86,21 +106,21 @@ const Navbar = () => {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
             <Link
-              to="#how-it-works"
+              to="/how-it-works"
               className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
               onClick={() => setIsOpen(false)}
             >
               How It Works
             </Link>
             <Link
-              to="#features"
+              to="/features"
               className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
               onClick={() => setIsOpen(false)}
             >
               Features
             </Link>
             <Link
-              to="#classifieds"
+              to="/classifieds"
               className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
               onClick={() => setIsOpen(false)}
             >
@@ -120,6 +140,18 @@ const Navbar = () => {
             >
               Get Started
             </Link>
+            <div className="px-3 py-2">
+              <button
+                onClick={() => {
+                  setLanguage(language === "en" ? "fr" : "en");
+                  setIsOpen(false);
+                }}
+                className="flex items-center space-x-2 text-gray-900"
+              >
+                <Globe className="w-4 h-4" />
+                <span>{language === "en" ? "Français" : "English"}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
