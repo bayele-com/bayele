@@ -47,6 +47,12 @@ const Navbar = () => {
                 Features
               </Link>
               <Link
+                to="#classifieds"
+                className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
+              >
+                Classifieds
+              </Link>
+              <Link
                 to="/login"
                 className="text-gray-900 hover:text-primary transition-colors px-3 py-2 text-sm font-medium"
               >
@@ -92,6 +98,13 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Features
+            </Link>
+            <Link
+              to="#classifieds"
+              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsOpen(false)}
+            >
+              Classifieds
             </Link>
             <Link
               to="/login"
