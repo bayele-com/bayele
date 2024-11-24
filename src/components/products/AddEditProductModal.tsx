@@ -20,7 +20,7 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
         throw new Error("User not authenticated");
       }
 
-      // Ensure all required fields are present
+      // Ensure all required fields are present with their correct types
       const productData = {
         business_id: user.id,
         name: formData.name,
@@ -30,7 +30,7 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
         category: formData.category,
         status: formData.status || 'active',
         image_urls: formData.image_urls || [],
-        metadata: {} // Add default metadata as required by the schema
+        metadata: {} as Json // Add default metadata as required by the schema
       };
 
       if (product?.id) {

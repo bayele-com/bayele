@@ -282,7 +282,9 @@ export type Database = {
       order_details: {
         Row: {
           created_at: string | null
-          delivery_address: Json
+          delivery_address:
+            | Database["public"]["CompositeTypes"]["delivery_address_type"]
+            | null
           email: string
           full_name: string
           id: string
@@ -292,7 +294,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          delivery_address: Json
+          delivery_address?:
+            | Database["public"]["CompositeTypes"]["delivery_address_type"]
+            | null
           email: string
           full_name: string
           id?: string
@@ -302,7 +306,9 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          delivery_address?: Json
+          delivery_address?:
+            | Database["public"]["CompositeTypes"]["delivery_address_type"]
+            | null
           email?: string
           full_name?: string
           id?: string
@@ -533,7 +539,12 @@ export type Database = {
       user_type: "affiliate" | "business" | "user" | "admin"
     }
     CompositeTypes: {
-      [_ in never]: never
+      delivery_address_type: {
+        address: string | null
+        city: string | null
+        state: string | null
+        zipcode: string | null
+      }
     }
   }
 }
