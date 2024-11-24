@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Globe } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [language, setLanguage] = useState("en");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +21,11 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleNavigation = (path: string) => {
+    setIsOpen(false);
+    navigate(path);
+  };
 
   return (
     <nav
@@ -105,41 +111,36 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-            <Link
-              to="/how-it-works"
-              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-              onClick={() => setIsOpen(false)}
+            <button
+              onClick={() => handleNavigation("/how-it-works")}
+              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium w-full text-left"
             >
               How It Works
-            </Link>
-            <Link
-              to="/features"
-              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-              onClick={() => setIsOpen(false)}
+            </button>
+            <button
+              onClick={() => handleNavigation("/features")}
+              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium w-full text-left"
             >
               Features
-            </Link>
-            <Link
-              to="/classifieds"
-              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-              onClick={() => setIsOpen(false)}
+            </button>
+            <button
+              onClick={() => handleNavigation("/classifieds")}
+              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium w-full text-left"
             >
               Classifieds
-            </Link>
-            <Link
-              to="/login"
-              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium"
-              onClick={() => setIsOpen(false)}
+            </button>
+            <button
+              onClick={() => handleNavigation("/login")}
+              className="text-gray-900 hover:text-primary block px-3 py-2 rounded-md text-base font-medium w-full text-left"
             >
               Login
-            </Link>
-            <Link
-              to="/signup"
-              className="bg-primary text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/90"
-              onClick={() => setIsOpen(false)}
+            </button>
+            <button
+              onClick={() => handleNavigation("/signup")}
+              className="bg-primary text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/90 w-full text-left"
             >
               Get Started
-            </Link>
+            </button>
             <div className="px-3 py-2">
               <button
                 onClick={() => {
