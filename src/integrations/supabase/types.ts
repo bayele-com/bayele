@@ -9,6 +9,76 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ad_categories: {
+        Row: {
+          display_order: number | null
+          icon: string | null
+          id: string
+          name: string
+          parent_id: string | null
+          slug: string
+        }
+        Insert: {
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          slug: string
+        }
+        Update: {
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ad_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ad_interactions: {
+        Row: {
+          ad_id: string | null
+          created_at: string | null
+          id: string
+          interaction_type: string
+          metadata: Json | null
+          user_ip_hash: string | null
+        }
+        Insert: {
+          ad_id?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          metadata?: Json | null
+          user_ip_hash?: string | null
+        }
+        Update: {
+          ad_id?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          metadata?: Json | null
+          user_ip_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_interactions_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "classified_ads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_earnings: {
         Row: {
           affiliate_id: string | null
@@ -110,6 +180,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      classified_ads: {
+        Row: {
+          ad_type: string
+          category: string
+          contact_info: Json
+          created_at: string | null
+          description: string
+          expires_at: string | null
+          featured: boolean | null
+          id: string
+          image_urls: string[] | null
+          location: string | null
+          metadata: Json | null
+          price: number | null
+          status: string | null
+          subcategory: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          ad_type: string
+          category: string
+          contact_info: Json
+          created_at?: string | null
+          description: string
+          expires_at?: string | null
+          featured?: boolean | null
+          id?: string
+          image_urls?: string[] | null
+          location?: string | null
+          metadata?: Json | null
+          price?: number | null
+          status?: string | null
+          subcategory?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          ad_type?: string
+          category?: string
+          contact_info?: Json
+          created_at?: string | null
+          description?: string
+          expires_at?: string | null
+          featured?: boolean | null
+          id?: string
+          image_urls?: string[] | null
+          location?: string | null
+          metadata?: Json | null
+          price?: number | null
+          status?: string | null
+          subcategory?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
       }
       link_analytics: {
         Row: {
