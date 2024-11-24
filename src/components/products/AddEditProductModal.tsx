@@ -21,8 +21,14 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
       }
 
       const productData = {
-        ...formData,
         business_id: user.id,
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        commission_rate: formData.commission_rate,
+        category: formData.category,
+        status: formData.status,
+        image_urls: formData.image_urls,
       };
 
       if (product?.id) {
@@ -53,7 +59,7 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
       }
 
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
