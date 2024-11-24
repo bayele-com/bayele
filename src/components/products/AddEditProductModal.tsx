@@ -6,7 +6,7 @@ import { ProductForm, ProductFormData } from "./ProductForm";
 interface AddEditProductModalProps {
   open: boolean;
   onClose: () => void;
-  product?: ProductFormData & { id?: string } | null;
+  product?: Partial<ProductFormData> & { id?: string } | null;
 }
 
 const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProps) => {
@@ -16,16 +16,21 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
+      if (!user?.id) {
+        throw new Error("User not authenticated");
+      }
+
       const productData = {
         ...formData,
-        business_id: user?.id,
+        business_id: user.id,
       };
 
       if (product?.id) {
         const { error } = await supabase
           .from("products")
           .update(productData)
-          .eq("id", product.id);
+          .eq("id", product.id)
+          .single();
 
         if (error) throw error;
 
@@ -36,7 +41,8 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
       } else {
         const { error } = await supabase
           .from("products")
-          .insert([productData]);
+          .insert(productData)
+          .single();
 
         if (error) throw error;
 

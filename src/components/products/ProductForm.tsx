@@ -37,7 +37,7 @@ export type ProductFormData = z.infer<typeof productSchema>;
 interface ProductFormProps {
   onSubmit: (data: ProductFormData) => Promise<void>;
   onClose: () => void;
-  defaultValues?: ProductFormData & { id?: string };
+  defaultValues?: Partial<ProductFormData> & { id?: string };
 }
 
 const categories = [
