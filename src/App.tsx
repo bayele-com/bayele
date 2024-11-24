@@ -12,6 +12,7 @@ import Features from "./pages/Features";
 import HowItWorks from "./pages/HowItWorks";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
+import Order from "./pages/Order";
 import { StrictMode } from "react";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/how-it-works" element={<HowItWorks />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/order/:productId" element={<Order />} />
             </Routes>
             <Toaster />
             <Sonner />
