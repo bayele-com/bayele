@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ProductForm, ProductFormData, productSchema } from "./ProductForm";
+import { ProductForm, ProductFormData } from "./ProductForm";
 
 interface AddEditProductModalProps {
   open: boolean;
@@ -14,10 +14,15 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
 
   const onSubmit = async (data: ProductFormData) => {
     try {
+      const productData = {
+        ...data,
+        business_id: (await supabase.auth.getUser()).data.user?.id,
+      };
+
       if (product?.id) {
         const { error } = await supabase
           .from("products")
-          .update(data)
+          .update(productData)
           .eq("id", product.id);
 
         if (error) throw error;
@@ -27,7 +32,9 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
           description: "Product updated successfully",
         });
       } else {
-        const { error } = await supabase.from("products").insert([data]);
+        const { error } = await supabase
+          .from("products")
+          .insert([productData]);
 
         if (error) throw error;
 

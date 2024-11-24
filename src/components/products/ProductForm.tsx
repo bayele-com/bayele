@@ -28,7 +28,7 @@ export const productSchema = z.object({
   price: z.number().min(0, "Price must be positive"),
   commission_rate: z.number().min(0).max(100),
   category: z.string().min(1, "Category is required"),
-  status: z.enum(["active", "inactive"]),
+  status: z.enum(["active", "inactive"]).default("active"),
   image_urls: z.array(z.string()).optional(),
 });
 
@@ -37,7 +37,7 @@ export type ProductFormData = z.infer<typeof productSchema>;
 interface ProductFormProps {
   onSubmit: (data: ProductFormData) => Promise<void>;
   onClose: () => void;
-  defaultValues?: Partial<ProductFormData>;
+  defaultValues?: ProductFormData;
 }
 
 const categories = [
