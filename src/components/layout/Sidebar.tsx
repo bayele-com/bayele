@@ -9,52 +9,102 @@ import {
   ShoppingCart,
   FileText,
   Users,
+  MessageSquare,
+  Eye,
 } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+interface NavLink {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+}
 
 const Sidebar = () => {
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+  const [userType, setUserType] = useState<string | null>(null);
 
-  const affiliateLinks = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/products", label: "Products to Promote", icon: Package },
-    { href: "/links", label: "My Links", icon: LinkIcon },
-    { href: "/earnings", label: "Earnings", icon: DollarSign },
-    { href: "/settings", label: "Settings", icon: Settings },
-  ];
+  useEffect(() => {
+    const getProfile = async () => {
+      if (!user?.id) return;
 
-  const businessLinks = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/products", label: "My Products", icon: Package },
-    { href: "/orders", label: "Orders", icon: ShoppingCart },
-    { href: "/settings", label: "Settings", icon: Settings },
-  ];
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("user_type")
+        .eq("id", user.id)
+        .single();
 
-  const userLinks = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/classifieds", label: "My Classifieds", icon: FileText },
-    { href: "/settings", label: "Settings", icon: Settings },
-  ];
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching profile",
+          description: error.message,
+        });
+        return;
+      }
 
-  const adminLinks = [
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/users", label: "Users", icon: Users },
-    { href: "/products", label: "Products", icon: Package },
-    { href: "/classifieds", label: "Classifieds", icon: FileText },
-    { href: "/orders", label: "Orders", icon: ShoppingCart },
-    { href: "/settings", label: "Settings", icon: Settings },
-  ];
+      setUserType(data.user_type);
+    };
 
-  // TODO: Get user type from profile and show appropriate links
-  const links = affiliateLinks;
+    getProfile();
+  }, [user, toast]);
+
+  const getNavLinks = (): NavLink[] => {
+    const baseLinks: NavLink[] = [
+      { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/settings", label: "Settings", icon: Settings },
+    ];
+
+    switch (userType) {
+      case "affiliate":
+        return [
+          ...baseLinks,
+          { href: "/products", label: "Products to Promote", icon: Package },
+          { href: "/links", label: "My Links", icon: LinkIcon },
+          { href: "/earnings", label: "Earnings", icon: DollarSign },
+        ];
+
+      case "business":
+        return [
+          ...baseLinks,
+          { href: "/products", label: "My Products", icon: Package },
+          { href: "/orders", label: "Orders", icon: ShoppingCart },
+          { href: "/messages", label: "Messages", icon: MessageSquare },
+        ];
+
+      case "user":
+        return [
+          ...baseLinks,
+          { href: "/classifieds", label: "My Ads", icon: FileText },
+          { href: "/views", label: "Ad Views", icon: Eye },
+          { href: "/messages", label: "Messages", icon: MessageSquare },
+        ];
+
+      case "admin":
+        return [
+          ...baseLinks,
+          { href: "/users", label: "Users", icon: Users },
+          { href: "/products", label: "Products", icon: Package },
+          { href: "/classifieds", label: "Classifieds", icon: FileText },
+          { href: "/orders", label: "Orders", icon: ShoppingCart },
+        ];
+
+      default:
+        return baseLinks;
+    }
+  };
 
   return (
     <div className="w-64 bg-white border-r border-gray-200 p-4">
       <div className="flex flex-col h-full">
         <div className="space-y-1">
-          {links.map(({ href, label, icon: Icon }) => (
+          {getNavLinks().map(({ href, label, icon: Icon }) => (
             <Link
               key={href}
               to={href}

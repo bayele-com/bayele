@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   session: Session | null;
@@ -43,19 +43,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           title: "Signed in successfully",
           description: "Welcome back!",
         });
+        navigate("/dashboard");
+      } else {
+        navigate("/");
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [toast]);
+  }, [navigate, toast]);
 
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      navigate("/");
       toast({
         title: "Signed out successfully",
       });
+      navigate("/");
     } catch (error) {
       toast({
         variant: "destructive",
