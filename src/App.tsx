@@ -13,6 +13,7 @@ import HowItWorks from "./pages/HowItWorks";
 import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Order from "./pages/Order";
+import Orders from "./pages/Orders";
 import { StrictMode } from "react";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<Products />} />
               <Route path="/order/:productId" element={<Order />} />
+              <Route path="/orders" element={<Orders />} />
             </Routes>
             <Toaster />
             <Sonner />
