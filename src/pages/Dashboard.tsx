@@ -4,6 +4,11 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import StatsCard from "@/components/affiliate/StatsCard";
+import EarningsChart from "@/components/affiliate/charts/EarningsChart";
+import TrafficSourcesChart from "@/components/affiliate/charts/TrafficSourcesChart";
+import RecentActivity from "@/components/affiliate/RecentActivity";
+import { DollarSign, Link, Eye, BarChart } from "lucide-react";
 
 interface Profile {
   user_type: "affiliate" | "business" | "user" | "admin";
@@ -44,19 +49,42 @@ const Dashboard = () => {
     switch (profile?.user_type) {
       case "affiliate":
         return (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-2">Total Earnings</h3>
-              <p className="text-3xl font-bold text-primary">$0.00</p>
-            </Card>
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-2">Active Links</h3>
-              <p className="text-3xl font-bold text-primary">0</p>
-            </Card>
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-2">Total Clicks</h3>
-              <p className="text-3xl font-bold text-primary">0</p>
-            </Card>
+          <div className="space-y-8">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <StatsCard
+                title="Total Earnings"
+                value="$0.00"
+                icon={DollarSign}
+                description="Lifetime earnings"
+              />
+              <StatsCard
+                title="Active Links"
+                value="0"
+                icon={Link}
+                description="Currently active"
+              />
+              <StatsCard
+                title="Total Clicks"
+                value="0"
+                icon={Eye}
+                description="All-time clicks"
+              />
+              <StatsCard
+                title="Conversion Rate"
+                value="0%"
+                icon={BarChart}
+                description="Clicks to sales"
+              />
+            </div>
+            
+            <div className="grid gap-4 md:grid-cols-6">
+              <EarningsChart />
+              <TrafficSourcesChart />
+            </div>
+            
+            <div className="grid gap-4 md:grid-cols-3">
+              <RecentActivity />
+            </div>
           </div>
         );
 
@@ -109,14 +137,14 @@ const Dashboard = () => {
     <DashboardLayout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">Welcome back, {profile?.full_name || "User"}!</h1>
-          <p className="text-gray-600 mt-2">Here's an overview of your account</p>
+          <h1 className="text-3xl font-bold">
+            Welcome back, {profile?.full_name || "User"}!
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Here's an overview of your affiliate performance
+          </p>
         </div>
         {renderDashboardContent()}
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-          <p className="text-gray-500">No recent activity to display</p>
-        </Card>
       </div>
     </DashboardLayout>
   );

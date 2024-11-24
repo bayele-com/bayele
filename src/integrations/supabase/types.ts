@@ -9,6 +9,149 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      affiliate_earnings: {
+        Row: {
+          affiliate_id: string | null
+          amount: number
+          created_at: string | null
+          id: string
+          link_id: string | null
+          payout_date: string | null
+          status: string | null
+        }
+        Insert: {
+          affiliate_id?: string | null
+          amount: number
+          created_at?: string | null
+          id?: string
+          link_id?: string | null
+          payout_date?: string | null
+          status?: string | null
+        }
+        Update: {
+          affiliate_id?: string | null
+          amount?: number
+          created_at?: string | null
+          id?: string
+          link_id?: string | null
+          payout_date?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_earnings_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_earnings_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_links: {
+        Row: {
+          affiliate_id: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          product_id: string | null
+          status: string | null
+          unique_code: string
+          updated_at: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          affiliate_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          product_id?: string | null
+          status?: string | null
+          unique_code: string
+          updated_at?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          affiliate_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          product_id?: string | null
+          status?: string | null
+          unique_code?: string
+          updated_at?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_links_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_links_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      link_analytics: {
+        Row: {
+          click_timestamp: string | null
+          conversion_status: boolean | null
+          created_at: string | null
+          id: string
+          ip_hash: string | null
+          link_id: string | null
+          referrer: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          click_timestamp?: string | null
+          conversion_status?: boolean | null
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          link_id?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          click_timestamp?: string | null
+          conversion_status?: boolean | null
+          created_at?: string | null
+          id?: string
+          ip_hash?: string | null
+          link_id?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "link_analytics_link_id_fkey"
+            columns: ["link_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           business_id: string | null
