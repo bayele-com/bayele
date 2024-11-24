@@ -61,9 +61,17 @@ const Links = () => {
         throw error;
       }
 
-      // Transform the data to include analytics counts
+      // Transform the data to match the AffiliateLink type
       return data.map((link) => ({
-        ...link,
+        id: link.id,
+        unique_code: link.unique_code,
+        status: link.status,
+        created_at: link.created_at,
+        product: {
+          name: link.products.name,
+          price: link.products.price,
+          commission_rate: link.products.commission_rate,
+        },
         analytics: {
           clicks: Array.isArray(link.link_analytics) ? link.link_analytics.length : 0,
           conversions: 0, // We'll implement this later
