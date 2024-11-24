@@ -82,7 +82,7 @@ const OrderTrackingDashboard = () => {
               <p>
                 {order.order_details?.[0]?.delivery_address?.city},{" "}
                 {order.order_details?.[0]?.delivery_address?.state}{" "}
-                {order.order_details?.[0]?.delivery_address?.zipCode}
+                {order.order_details?.[0]?.delivery_address?.zipcode}
               </p>
             </div>
             <Separator />

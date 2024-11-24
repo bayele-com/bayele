@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductForm, ProductFormData } from "./ProductForm";
+import { Json } from "@/integrations/supabase/types";
 
 interface AddEditProductModalProps {
   open: boolean;
