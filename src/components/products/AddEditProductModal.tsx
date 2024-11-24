@@ -12,11 +12,13 @@ interface AddEditProductModalProps {
 const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProps) => {
   const { toast } = useToast();
 
-  const onSubmit = async (data: ProductFormData) => {
+  const onSubmit = async (formData: ProductFormData) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
       const productData = {
-        ...data,
-        business_id: (await supabase.auth.getUser()).data.user?.id,
+        ...formData,
+        business_id: user?.id,
       };
 
       if (product?.id) {
