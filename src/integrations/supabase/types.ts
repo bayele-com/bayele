@@ -9,6 +9,59 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      products: {
+        Row: {
+          business_id: string | null
+          category: string
+          commission_rate: number
+          created_at: string | null
+          description: string | null
+          id: string
+          image_urls: string[] | null
+          metadata: Json | null
+          name: string
+          price: number
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          category: string
+          commission_rate: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          metadata?: Json | null
+          name: string
+          price: number
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          category?: string
+          commission_rate?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_urls?: string[] | null
+          metadata?: Json | null
+          name?: string
+          price?: number
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

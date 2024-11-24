@@ -10,6 +10,7 @@ import Classifieds from "./pages/Classifieds";
 import Features from "./pages/Features";
 import HowItWorks from "./pages/HowItWorks";
 import Dashboard from "./pages/Dashboard";
+import Products from "./pages/Products";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/features" element={<Features />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/products" element={<Products />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
