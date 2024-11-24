@@ -77,12 +77,12 @@ const OrderTrackingDashboard = () => {
             <Separator />
             <div>
               <h3 className="font-medium mb-2">Delivery Information</h3>
-              <p>{order.order_details?.full_name}</p>
-              <p>{order.order_details?.delivery_address.address}</p>
+              <p>{order.order_details?.[0]?.full_name}</p>
+              <p>{order.order_details?.[0]?.delivery_address?.address}</p>
               <p>
-                {order.order_details?.delivery_address.city},{" "}
-                {order.order_details?.delivery_address.state}{" "}
-                {order.order_details?.delivery_address.zipCode}
+                {order.order_details?.[0]?.delivery_address?.city},{" "}
+                {order.order_details?.[0]?.delivery_address?.state}{" "}
+                {order.order_details?.[0]?.delivery_address?.zipCode}
               </p>
             </div>
             <Separator />
