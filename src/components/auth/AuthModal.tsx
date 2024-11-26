@@ -16,13 +16,16 @@ const AuthModal = ({ isOpen, onClose, defaultView = "sign_in", userType }: AuthM
   const [view, setView] = useState(defaultView);
   const { toast } = useToast();
 
-  const handleAuthError = (error: Error) => {
-    toast({
-      variant: "destructive",
-      title: "Authentication Error",
-      description: "Invalid email or password. Please try again.",
-    });
-  };
+  // Listen for auth state changes
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: "Invalid email or password. Please try again.",
+      });
+    }
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -50,7 +53,6 @@ const AuthModal = ({ isOpen, onClose, defaultView = "sign_in", userType }: AuthM
           redirectTo={window.location.origin}
           onlyThirdPartyProviders={false}
           additionalData={userType ? { user_type: userType } : undefined}
-          onError={handleAuthError}
         />
       </DialogContent>
     </Dialog>
