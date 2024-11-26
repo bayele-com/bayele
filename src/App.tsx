@@ -14,19 +14,18 @@ import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Order from "./pages/Order";
 import Orders from "./pages/Orders";
-import { StrictMode } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute
+      staleTime: 60 * 1000,
       retry: 1,
     },
   },
 });
 
-const App = () => (
-  <StrictMode>
+const App = () => {
+  return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <TooltipProvider>
@@ -51,7 +50,7 @@ const App = () => (
         </TooltipProvider>
       </BrowserRouter>
     </QueryClientProvider>
-  </StrictMode>
-);
+  );
+};
 
 export default App;
