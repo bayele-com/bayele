@@ -1,15 +1,24 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import NavLink from "./navbar/NavLink";
 import LanguageSelector from "./navbar/LanguageSelector";
 import MobileMenu from "./navbar/MobileMenu";
+import { useAuth } from "./auth/AuthProvider";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [language, setLanguage] = useState("en");
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,13 +56,41 @@ const Navbar = () => {
             <NavLink to="/how-it-works">How It Works</NavLink>
             <NavLink to="/features">Features</NavLink>
             <NavLink to="/classifieds">Classifieds</NavLink>
-            <NavLink to="/signup">Login</NavLink>
-            <Link
-              to="/signup"
-              className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              Get Started
-            </Link>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Account
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="w-full">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link
+                  to="/signup"
+                  className="text-gray-900 hover:text-primary transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
+            
             <LanguageSelector language={language} setLanguage={setLanguage} />
           </div>
 
@@ -81,6 +118,8 @@ const Navbar = () => {
         setIsOpen={setIsOpen}
         language={language}
         setLanguage={setLanguage}
+        user={user}
+        onSignOut={signOut}
       />
     </nav>
   );

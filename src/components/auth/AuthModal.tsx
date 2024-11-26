@@ -30,6 +30,11 @@ const AuthModal = ({ isOpen, onClose, defaultView = "sign_in", userType }: AuthM
                 },
               },
             },
+            className: {
+              container: "w-full",
+              button: "w-full px-4 py-2 bg-primary text-white rounded",
+              input: "w-full px-3 py-2 border rounded",
+            },
           }}
           providers={[]}
           redirectTo={window.location.origin}
