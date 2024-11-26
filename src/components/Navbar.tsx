@@ -1,19 +1,14 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Globe } from "lucide-react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import NavLink from "./navbar/NavLink";
+import LanguageSelector from "./navbar/LanguageSelector";
+import MobileMenu from "./navbar/MobileMenu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [language, setLanguage] = useState("en");
-  const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,11 +17,6 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleNavigation = (path: string) => {
-    setIsOpen(false);
-    navigate(path);
-  };
 
   return (
     <nav
@@ -47,67 +37,17 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <Link
-              to="/how-it-works"
-              className={`transition-colors px-3 py-2 text-sm font-medium ${
-                location.pathname === "/how-it-works"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-            >
-              How It Works
-            </Link>
-            <Link
-              to="/features"
-              className={`transition-colors px-3 py-2 text-sm font-medium ${
-                location.pathname === "/features"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-            >
-              Features
-            </Link>
-            <Link
-              to="/classifieds"
-              className={`transition-colors px-3 py-2 text-sm font-medium ${
-                location.pathname === "/classifieds"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-            >
-              Classifieds
-            </Link>
-            <Link
-              to="/login"
-              className={`transition-colors px-3 py-2 text-sm font-medium ${
-                location.pathname === "/login"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-            >
-              Login
-            </Link>
+            <NavLink to="/how-it-works">How It Works</NavLink>
+            <NavLink to="/features">Features</NavLink>
+            <NavLink to="/classifieds">Classifieds</NavLink>
+            <NavLink to="/login">Login</NavLink>
             <Link
               to="/signup"
               className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
             >
               Get Started
             </Link>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center space-x-1 text-gray-900">
-                <Globe className="w-4 h-4" />
-                <span className="text-sm">{language === "en" ? "EN" : "FR"}</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setLanguage("en")}>
-                  English
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage("fr")}>
-                  Français
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <LanguageSelector language={language} setLanguage={setLanguage} />
           </div>
 
           <div className="md:hidden">
@@ -125,75 +65,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-            <Link
-              to="/how-it-works"
-              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
-                location.pathname === "/how-it-works"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              How It Works
-            </Link>
-            <Link
-              to="/features"
-              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
-                location.pathname === "/features"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Features
-            </Link>
-            <Link
-              to="/classifieds"
-              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
-                location.pathname === "/classifieds"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Classifieds
-            </Link>
-            <Link
-              to="/login"
-              className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${
-                location.pathname === "/login"
-                  ? "text-primary"
-                  : "text-gray-900 hover:text-primary"
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Login
-            </Link>
-            <Link
-              to="/signup"
-              className="bg-primary text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/90 w-full text-left"
-              onClick={() => setIsOpen(false)}
-            >
-              Get Started
-            </Link>
-            <div className="px-3 py-2">
-              <button
-                onClick={() => {
-                  setLanguage(language === "en" ? "fr" : "en");
-                  setIsOpen(false);
-                }}
-                className="flex items-center space-x-2 text-gray-900"
-              >
-                <Globe className="w-4 h-4" />
-                <span>{language === "en" ? "Français" : "English"}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <MobileMenu
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        language={language}
+        setLanguage={setLanguage}
+      />
     </nav>
   );
 };
