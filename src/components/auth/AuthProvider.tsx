@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import type { User } from "@supabase/supabase-js";
+import type { User, AuthChangeEvent } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (location.pathname === '/signup') {
           navigate('/dashboard');
         }
-      } else if (_event === 'SIGNED_UP') {
+      } else if (event === 'SIGNED_UP') {
         toast({
           title: "Account created successfully",
           description: "Please sign in to continue",
