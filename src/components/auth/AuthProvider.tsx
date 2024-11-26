@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (location.pathname === '/signup') {
           navigate('/dashboard');
         }
-      } else if (event === 'SIGNED_UP') {
+      } else if (event === "SIGNED_UP") {
         toast({
           title: "Account created successfully",
           description: "Please sign in to continue",
