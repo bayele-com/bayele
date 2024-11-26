@@ -41,9 +41,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           title: "Signed in successfully",
           description: "Welcome back!",
         });
-        if (location.pathname === '/signup' || location.pathname === '/login') {
+        if (location.pathname === '/signup') {
           navigate('/dashboard');
         }
+      } else if (_event === 'SIGNED_UP') {
+        toast({
+          title: "Account created successfully",
+          description: "Please sign in to continue",
+        });
+        navigate('/signup');
       }
     });
 

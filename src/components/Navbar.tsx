@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X, User } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import NavLink from "./navbar/NavLink";
 import LanguageSelector from "./navbar/LanguageSelector";
 import MobileMenu from "./navbar/MobileMenu";
@@ -18,6 +18,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [language, setLanguage] = useState("en");
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
   useEffect(() => {
@@ -33,6 +34,10 @@ const Navbar = () => {
       setIsOpen(false);
     }
   }, [location.pathname]);
+
+  const handleLoginClick = () => {
+    navigate("/signup");
+  };
 
   return (
     <nav
@@ -76,12 +81,13 @@ const Navbar = () => {
               </DropdownMenu>
             ) : (
               <>
-                <Link
-                  to="/signup"
+                <Button
+                  variant="ghost"
+                  onClick={handleLoginClick}
                   className="text-gray-900 hover:text-primary transition-colors"
                 >
                   Login
-                </Link>
+                </Button>
                 <Link
                   to="/signup"
                   className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
