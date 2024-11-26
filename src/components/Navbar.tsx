@@ -20,7 +20,9 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    setIsOpen(false);
+    if (isOpen) {
+      setIsOpen(false);
+    }
   }, [location.pathname]);
 
   return (

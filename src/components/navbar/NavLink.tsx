@@ -11,6 +11,12 @@ const NavLink = ({ to, children, className = "", onClick }: NavLinkProps) => {
   const location = useLocation();
   const isActive = location.pathname === to;
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <Link
       to={to}
@@ -19,7 +25,7 @@ const NavLink = ({ to, children, className = "", onClick }: NavLinkProps) => {
           ? "text-primary" 
           : "text-gray-900 hover:text-primary"
       } ${className}`}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {children}
     </Link>

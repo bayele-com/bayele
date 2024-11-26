@@ -1,76 +1,65 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
-  session: Session | null;
   user: User | null;
+  session: any;
   signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  session: null,
-  user: null,
-  signOut: async () => {},
-});
-
-export const useAuth = () => useContext(AuthContext);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
-    // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setLoading(false);
     });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-
-      if (session) {
-        toast({
-          title: "Signed in successfully",
-          description: "Welcome back!",
-        });
-        navigate("/dashboard");
-      } else {
-        navigate("/");
-      }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, toast]);
+  }, []);
 
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast({
-        title: "Signed out successfully",
-      });
+      setUser(null);
+      setSession(null);
       navigate("/");
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error signing out",
-        description: "Please try again",
-      });
+      console.error("Error signing out:", error);
     }
   };
 
+  if (loading) {
+    return null;
+  }
+
   return (
-    <AuthContext.Provider value={{ session, user, signOut }}>
+    <AuthContext.Provider value={{ user, session, signOut }}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 };
