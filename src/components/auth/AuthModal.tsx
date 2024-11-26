@@ -4,6 +4,7 @@ import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useToast } from "@/hooks/use-toast";
+import { AuthError } from "@supabase/supabase-js";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,8 +18,8 @@ const AuthModal = ({ isOpen, onClose, defaultView = "sign_in", userType }: AuthM
   const { toast } = useToast();
 
   // Listen for auth state changes
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') {
       toast({
         variant: "destructive",
         title: "Authentication Error",
