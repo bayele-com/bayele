@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import NavLink from "./navbar/NavLink";
 import LanguageSelector from "./navbar/LanguageSelector";
 import MobileMenu from "./navbar/MobileMenu";
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [language, setLanguage] = useState("en");
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +18,11 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
 
   return (
     <nav
@@ -40,7 +46,7 @@ const Navbar = () => {
             <NavLink to="/how-it-works">How It Works</NavLink>
             <NavLink to="/features">Features</NavLink>
             <NavLink to="/classifieds">Classifieds</NavLink>
-            <NavLink to="/login">Login</NavLink>
+            <NavLink to="/signup">Login</NavLink>
             <Link
               to="/signup"
               className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-primary/90 transition-colors"
@@ -54,7 +60,11 @@ const Navbar = () => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-900 hover:text-primary hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+              aria-expanded={isOpen}
             >
+              <span className="sr-only">
+                {isOpen ? "Close menu" : "Open menu"}
+              </span>
               {isOpen ? (
                 <X className="block h-6 w-6" aria-hidden="true" />
               ) : (

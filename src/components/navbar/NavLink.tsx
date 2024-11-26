@@ -14,8 +14,10 @@ const NavLink = ({ to, children, className = "", onClick }: NavLinkProps) => {
   return (
     <Link
       to={to}
-      className={`transition-colors px-3 py-2 text-sm font-medium ${
-        isActive ? "text-primary" : "text-gray-900 hover:text-primary"
+      className={`block transition-colors px-3 py-2 text-sm font-medium ${
+        isActive 
+          ? "text-primary" 
+          : "text-gray-900 hover:text-primary"
       } ${className}`}
       onClick={onClick}
     >

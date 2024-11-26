@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import NavLink from "./NavLink";
+import LanguageSelector from "./LanguageSelector";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -11,39 +12,37 @@ interface MobileMenuProps {
 const MobileMenu = ({ isOpen, setIsOpen, language, setLanguage }: MobileMenuProps) => {
   if (!isOpen) return null;
 
+  const handleLinkClick = () => {
+    setIsOpen(false);
+  };
+
   return (
     <div className="md:hidden">
       <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white shadow-lg">
-        <NavLink to="/how-it-works" onClick={() => setIsOpen(false)}>
+        <NavLink to="/how-it-works" onClick={handleLinkClick}>
           How It Works
         </NavLink>
-        <NavLink to="/features" onClick={() => setIsOpen(false)}>
+        <NavLink to="/features" onClick={handleLinkClick}>
           Features
         </NavLink>
-        <NavLink to="/classifieds" onClick={() => setIsOpen(false)}>
+        <NavLink to="/classifieds" onClick={handleLinkClick}>
           Classifieds
         </NavLink>
-        <NavLink to="/login" onClick={() => setIsOpen(false)}>
+        <NavLink to="/signup" onClick={handleLinkClick}>
           Login
         </NavLink>
         <Link
           to="/signup"
-          className="bg-primary text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-primary/90 w-full text-left"
-          onClick={() => setIsOpen(false)}
+          className="block bg-primary text-white px-3 py-2 rounded-md text-base font-medium hover:bg-primary/90 w-full text-left"
+          onClick={handleLinkClick}
         >
           Get Started
         </Link>
-        <div className="px-3 py-2">
-          <button
-            onClick={() => {
-              setLanguage(language === "en" ? "fr" : "en");
-              setIsOpen(false);
-            }}
-            className="flex items-center space-x-2 text-gray-900"
-          >
-            <span>{language === "en" ? "Français" : "English"}</span>
-          </button>
-        </div>
+        <LanguageSelector 
+          language={language} 
+          setLanguage={setLanguage} 
+          isMobile={true} 
+        />
       </div>
     </div>
   );

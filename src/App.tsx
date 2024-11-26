@@ -16,7 +16,14 @@ import Order from "./pages/Order";
 import Orders from "./pages/Orders";
 import { StrictMode } from "react";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <StrictMode>
@@ -27,7 +34,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/login" element={<Navigate to="/signup" />} />
+              <Route path="/login" element={<Navigate to="/signup" replace />} />
               <Route path="/classifieds" element={<Classifieds />} />
               <Route path="/post-classified" element={<PostClassified />} />
               <Route path="/features" element={<Features />} />
