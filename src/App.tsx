@@ -15,6 +15,8 @@ import Dashboard from "./pages/Dashboard";
 import Products from "./pages/Products";
 import Order from "./pages/Order";
 import Orders from "./pages/Orders";
+import Settings from "./pages/Settings";
+import Messages from "./pages/Messages";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +52,8 @@ const App = () => {
                 <Route path="/products" element={<Products />} />
                 <Route path="/order/:productId" element={<Order />} />
                 <Route path="/orders" element={<Orders />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/messages" element={<Messages />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <Toaster />
