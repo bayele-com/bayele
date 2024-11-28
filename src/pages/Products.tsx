@@ -9,6 +9,7 @@ import ProductCard from "@/components/products/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import AddEditProductModal from "@/components/products/AddEditProductModal";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 interface Product {
   id: string;
@@ -25,12 +26,12 @@ const Products = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const { data: products, isLoading, error, refetch } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", user?.id],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) return [];
 
       const { data, error } = await supabase
         .from("products")
@@ -40,15 +41,18 @@ const Products = () => {
       if (error) throw error;
       return data as Product[];
     },
+    enabled: !!user,
   });
 
-  if (error) {
-    toast({
-      variant: "destructive",
-      title: "Error loading products",
-      description: "Please try again later",
-    });
-  }
+  const handleError = () => {
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error loading products",
+        description: "Please try again later",
+      });
+    }
+  };
 
   const filteredProducts = products?.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
