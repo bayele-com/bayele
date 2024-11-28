@@ -1,23 +1,19 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Globe, Mail, MessageSquare, Star } from "lucide-react";
+import { Json } from "@/integrations/supabase/types";
 
 interface ClassifiedAd {
-  id: number;
+  id: string;
   title: string;
   category: string;
-  location: string;
+  location: string | null;
   description: string;
   price?: number;
   featured?: boolean;
-  sponsored?: boolean;
-  date: string;
-  image: string;
-  contact?: {
-    website?: string;
-    email?: string;
-    whatsapp?: string;
-  };
+  image_urls?: string[] | null;
+  contact_info: Json;
+  created_at: string;
 }
 
 interface ClassifiedCardProps {
@@ -30,19 +26,25 @@ const ClassifiedCard = ({ ad, featured }: ClassifiedCardProps) => {
     window.open(`https://wa.me/${phone}`, '_blank');
   };
 
+  const contactInfo = ad.contact_info as {
+    website?: string;
+    email?: string;
+    whatsapp?: string;
+  };
+
   return (
     <Card className="hover:shadow-lg transition-shadow duration-300">
       <CardContent className="p-0">
         <div className="relative">
           <img
-            src={ad.image}
+            src={ad.image_urls?.[0] || '/placeholder.svg'}
             alt={ad.title}
             className="w-full h-48 object-cover rounded-t-lg"
           />
-          {ad.sponsored && (
+          {featured && (
             <div className="absolute top-2 right-2 bg-yellow-400 text-white px-2 py-1 rounded-full flex items-center gap-1">
               <Star className="w-4 h-4" />
-              <span className="text-sm">Sponsored</span>
+              <span className="text-sm">Featured</span>
             </div>
           )}
         </div>
@@ -53,33 +55,33 @@ const ClassifiedCard = ({ ad, featured }: ClassifiedCardProps) => {
             <span>{ad.category}</span>
             <span>{ad.location}</span>
           </div>
-          {ad.contact && (
+          {contactInfo && (
             <div className="flex gap-2 mt-4">
-              {ad.contact.website && (
+              {contactInfo.website && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.open(ad.contact!.website, '_blank')}
+                  onClick={() => window.open(contactInfo.website, '_blank')}
                 >
                   <Globe className="w-4 h-4 mr-2" />
                   Website
                 </Button>
               )}
-              {ad.contact.email && (
+              {contactInfo.email && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.location.href = `mailto:${ad.contact!.email}`}
+                  onClick={() => window.location.href = `mailto:${contactInfo.email}`}
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Email
                 </Button>
               )}
-              {ad.contact.whatsapp && (
+              {contactInfo.whatsapp && (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleWhatsAppClick(ad.contact!.whatsapp)}
+                  onClick={() => handleWhatsAppClick(contactInfo.whatsapp!)}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   WhatsApp
