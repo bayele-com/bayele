@@ -24,33 +24,63 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
-    });
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: error.message,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session) {
-        toast({
-          title: "Signed in successfully",
-          description: "Welcome back!",
-        });
-        if (location.pathname === '/signup') {
-          navigate('/dashboard');
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      try {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (event === 'SIGNED_IN') {
+          toast({
+            title: "Signed in successfully",
+            description: "Welcome back!",
+          });
+          if (location.pathname === '/signup') {
+            navigate('/dashboard');
+          }
+        } else if (event === 'SIGNED_OUT') {
+          toast({
+            title: "Signed out successfully",
+          });
+          navigate('/');
+        } else if (event === 'USER_UPDATED') {
+          setUser(session?.user ?? null);
         }
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: error.message,
+        });
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate, location.pathname, toast]);
 
-  // Protected routes check
   useEffect(() => {
     if (!isLoading && !user && protectedRoutes.includes(location.pathname)) {
       toast({
@@ -58,7 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Authentication required",
         description: "Please sign in to access this page",
       });
-      navigate('/signup');
+      navigate('/signup', { state: { from: location.pathname } });
     }
   }, [user, location.pathname, isLoading, navigate, toast]);
 
@@ -71,12 +101,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Signed out successfully",
       });
       navigate("/");
-    } catch (error) {
-      console.error("Error signing out:", error);
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error signing out",
-        description: "Please try again",
+        description: error.message,
       });
     }
   };
