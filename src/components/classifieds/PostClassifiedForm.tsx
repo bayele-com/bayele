@@ -2,26 +2,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ImageUpload } from "./ImageUpload";
-import { cameroonRegions } from "@/data/locations";
+import { Form } from "@/components/ui/form";
+import BasicInfoForm from "./forms/BasicInfoForm";
+import PricingLocationForm from "./forms/PricingLocationForm";
+import ContactInfoForm from "./forms/ContactInfoForm";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -66,9 +50,10 @@ const PostClassifiedForm = ({ onSubmit }: PostClassifiedFormProps) => {
     },
   });
 
-  const handleSubmit = async (data: FormData) => {
+  const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      const data = form.getValues();
       await onSubmit(data);
     } finally {
       setIsSubmitting(false);
@@ -77,217 +62,27 @@ const PostClassifiedForm = ({ onSubmit }: PostClassifiedFormProps) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form className="space-y-6">
         {step === 1 && (
-          <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Jobs">Jobs</SelectItem>
-                        <SelectItem value="Announcements">Announcements</SelectItem>
-                        <SelectItem value="Miscellaneous">Miscellaneous</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="ad_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ad Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="offer">Offering</SelectItem>
-                        <SelectItem value="wanted">Wanted</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <Button type="button" onClick={() => setStep(2)}>
-              Next
-            </Button>
-          </div>
+          <BasicInfoForm
+            form={form}
+            onNext={() => setStep(2)}
+          />
         )}
-
         {step === 2 && (
-          <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price (optional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select location" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {cameroonRegions.map((loc) => (
-                        <SelectItem key={loc.region} value={loc.capital}>
-                          {loc.capital}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="image_urls"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Images</FormLabel>
-                  <FormControl>
-                    <ImageUpload
-                      value={field.value || []}
-                      onChange={field.onChange}
-                      maxFiles={4}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => setStep(1)}>
-                Back
-              </Button>
-              <Button type="button" onClick={() => setStep(3)}>
-                Next
-              </Button>
-            </div>
-          </div>
+          <PricingLocationForm
+            form={form}
+            onNext={() => setStep(3)}
+            onBack={() => setStep(1)}
+          />
         )}
-
         {step === 3 && (
-          <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="contact_info.email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email (optional)</FormLabel>
-                  <FormControl>
-                    <Input type="email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="contact_info.phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone (optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="contact_info.whatsapp"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>WhatsApp (optional)</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => setStep(2)}>
-                Back
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Button>
-            </div>
-          </div>
+          <ContactInfoForm
+            form={form}
+            onSubmit={handleSubmit}
+            onBack={() => setStep(2)}
+            isSubmitting={isSubmitting}
+          />
         )}
       </form>
     </Form>
