@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Loader2 } from "lucide-react";
 import ProductCard from "@/components/products/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import AddEditProductModal from "@/components/products/AddEditProductModal";
+import { Separator } from "@/components/ui/separator";
 
 interface Product {
   id: string;
@@ -25,7 +26,7 @@ const Products = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { toast } = useToast();
 
-  const { data: products, isLoading, refetch } = useQuery({
+  const { data: products, isLoading, error, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -36,18 +37,18 @@ const Products = () => {
         .select("*")
         .eq("business_id", user.id);
 
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error fetching products",
-          description: error.message,
-        });
-        throw error;
-      }
-
+      if (error) throw error;
       return data as Product[];
     },
   });
+
+  if (error) {
+    toast({
+      variant: "destructive",
+      title: "Error loading products",
+      description: "Please try again later",
+    });
+  }
 
   const filteredProducts = products?.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -60,7 +61,7 @@ const Products = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-[1200px] mx-auto">
+      <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">My Products</h1>
           <div className="flex items-center gap-4">
@@ -80,9 +81,11 @@ const Products = () => {
           </div>
         </div>
 
+        <Separator />
+
         {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500">Loading products...</p>
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : filteredProducts?.length === 0 ? (
           <div className="text-center py-12">
