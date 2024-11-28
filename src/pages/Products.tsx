@@ -25,7 +25,7 @@ const Products = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { toast } = useToast();
 
-  const { data: products, isLoading } = useQuery({
+  const { data: products, isLoading, refetch } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -53,9 +53,14 @@ const Products = () => {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleModalClose = () => {
+    setIsAddModalOpen(false);
+    refetch();
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-[1200px] mx-auto">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">My Products</h1>
           <div className="flex items-center gap-4">
@@ -113,7 +118,7 @@ const Products = () => {
 
         <AddEditProductModal
           open={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
+          onClose={handleModalClose}
           product={null}
         />
       </div>

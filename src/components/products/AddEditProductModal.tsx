@@ -21,7 +21,6 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
         throw new Error("User not authenticated");
       }
 
-      // Ensure all required fields are present with their correct types
       const productData = {
         business_id: user.id,
         name: formData.name,
@@ -31,7 +30,7 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
         category: formData.category,
         status: formData.status || 'active',
         image_urls: formData.image_urls || [],
-        metadata: {} as Json // Add default metadata as required by the schema
+        metadata: {} as Json
       };
 
       if (product?.id) {
@@ -73,17 +72,19 @@ const AddEditProductModal = ({ open, onClose, product }: AddEditProductModalProp
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-w-[800px] max-h-[90vh] overflow-y-auto p-6">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-xl font-bold">
             {product ? "Edit Product" : "Add New Product"}
           </DialogTitle>
         </DialogHeader>
-        <ProductForm
-          onSubmit={onSubmit}
-          onClose={onClose}
-          defaultValues={product}
-        />
+        <div className="mt-4">
+          <ProductForm
+            onSubmit={onSubmit}
+            onClose={onClose}
+            defaultValues={product}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
