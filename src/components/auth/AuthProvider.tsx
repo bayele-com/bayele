@@ -1,12 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import type { User } from "@supabase/supabase-js";
+import type { User, Session } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   user: User | null;
-  session: any;
+  session: Session | null;
   signOut: () => Promise<void>;
   isLoading: boolean;
 }
@@ -17,69 +17,28 @@ const protectedRoutes = ['/dashboard', '/products', '/orders', '/post-classified
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        
-        setSession(session);
-        setUser(session?.user ?? null);
-      } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: error.message,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeAuth();
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      setIsLoading(false);
+    });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      try {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (event === 'SIGNED_IN') {
-          toast({
-            title: "Signed in successfully",
-            description: "Welcome back!",
-          });
-          if (location.pathname === '/signup') {
-            navigate('/dashboard');
-          }
-        } else if (event === 'SIGNED_OUT') {
-          toast({
-            title: "Signed out successfully",
-          });
-          navigate('/');
-        } else if (event === 'USER_UPDATED') {
-          setUser(session?.user ?? null);
-        }
-      } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: error.message,
-        });
-      }
+    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate, location.pathname, toast]);
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !user && protectedRoutes.includes(location.pathname)) {
@@ -97,10 +56,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
+      navigate("/");
       toast({
         title: "Signed out successfully",
       });
-      navigate("/");
     } catch (error: any) {
       toast({
         variant: "destructive",
