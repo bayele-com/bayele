@@ -16,11 +16,16 @@ const Earnings = () => {
       const { data, error } = await supabase
         .from("affiliate_earnings_summary")
         .select("*")
-        .eq("affiliate_id", user.id)
-        .single();
+        .eq("affiliate_id", user.id);
 
       if (error) throw error;
-      return data;
+      // Return first result or default values if no data exists
+      return data[0] || {
+        total_earnings: 0,
+        total_sales: 0,
+        first_sale_date: null,
+        last_sale_date: null
+      };
     },
   });
 
