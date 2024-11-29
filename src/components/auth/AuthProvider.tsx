@@ -24,41 +24,62 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
+
     // Initialize session
     const initSession = async () => {
       try {
-        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        
-        setSession(currentSession);
-        setUser(currentSession?.user ?? null);
+        // Get initial session
+        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+
+        if (mounted) {
+          setSession(initialSession);
+          setUser(initialSession?.user ?? null);
+        }
+
+        // Set up auth state listener
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+          if (mounted) {
+            setSession(currentSession);
+            setUser(currentSession?.user ?? null);
+
+            // Handle auth events
+            if (event === 'SIGNED_OUT') {
+              setUser(null);
+              setSession(null);
+              navigate('/login');
+            } else if (event === 'SIGNED_IN' && currentSession) {
+              const returnTo = location.state?.from || '/dashboard';
+              navigate(returnTo);
+            }
+          }
+        });
+
+        return () => {
+          mounted = false;
+          subscription.unsubscribe();
+        };
       } catch (error: any) {
-        console.error('Error fetching session:', error);
+        console.error('Auth error:', error);
         toast({
           variant: "destructive",
           title: "Authentication Error",
-          description: error.message,
+          description: error.message || "Failed to initialize session",
         });
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     initSession();
 
-    // Set up auth state listener
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-      setIsLoading(false);
-    });
-
     return () => {
-      subscription.unsubscribe();
+      mounted = false;
     };
-  }, [toast]);
+  }, [navigate, location.state, toast]);
 
   useEffect(() => {
     if (!isLoading && !user && protectedRoutes.includes(location.pathname)) {
@@ -74,8 +95,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      setUser(null);
-      setSession(null);
       navigate("/");
       toast({
         title: "Signed out successfully",
@@ -89,8 +108,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const value = {
+    user,
+    session,
+    signOut,
+    isLoading,
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, signOut, isLoading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
