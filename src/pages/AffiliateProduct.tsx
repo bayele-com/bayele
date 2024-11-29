@@ -26,10 +26,10 @@ const AffiliateProduct = () => {
   useEffect(() => {
     const loadProduct = async () => {
       try {
-        // First get the affiliate link details
+        // First get the affiliate link details - now including the id field
         const { data: linkData, error: linkError } = await supabase
           .from("affiliate_links")
-          .select("product_id")
+          .select("id, product_id")
           .eq("unique_code", code)
           .single();
 
