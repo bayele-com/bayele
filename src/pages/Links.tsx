@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -15,8 +14,10 @@ interface AffiliateLink {
   created_at: string;
   product: {
     name: string;
+    description: string;
     price: number;
     commission_rate: number;
+    image_urls: string[];
   };
   analytics: {
     clicks: number;
@@ -34,6 +35,12 @@ const Links = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("whatsapp_number")
+        .eq("id", user.id)
+        .single();
+
       const { data, error } = await supabase
         .from("affiliate_links")
         .select(`
@@ -43,8 +50,10 @@ const Links = () => {
           created_at,
           products (
             name,
+            description,
             price,
-            commission_rate
+            commission_rate,
+            image_urls
           ),
           link_analytics (
             id
@@ -61,7 +70,6 @@ const Links = () => {
         throw error;
       }
 
-      // Transform the data to match the AffiliateLink type
       return data.map((link) => ({
         id: link.id,
         unique_code: link.unique_code,
@@ -69,8 +77,10 @@ const Links = () => {
         created_at: link.created_at,
         product: {
           name: link.products.name,
+          description: link.products.description,
           price: link.products.price,
           commission_rate: link.products.commission_rate,
+          image_urls: link.products.image_urls,
         },
         analytics: {
           clicks: Array.isArray(link.link_analytics) ? link.link_analytics.length : 0,

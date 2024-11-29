@@ -20,8 +20,10 @@ interface LinkListProps {
     created_at: string;
     product: {
       name: string;
+      description: string;
       price: number;
       commission_rate: number;
+      image_urls: string[];
     };
     analytics: {
       clicks: number;
@@ -52,72 +54,79 @@ const LinkList = ({ links }: LinkListProps) => {
   };
 
   return (
-    <div className="border rounded-lg">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Product</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Performance</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {links.map((link) => (
-            <TableRow key={link.id}>
-              <TableCell className="font-medium">
-                <div className="flex flex-col">
-                  <span>{link.product.name}</span>
-                  <span className="text-sm text-muted-foreground">
-                    Commission: {link.product.commission_rate}%
-                  </span>
+    <div className="space-y-6">
+      {links.map((link) => (
+        <div key={link.id} className="bg-white rounded-lg shadow">
+          <div className="p-6">
+            <div className="flex items-start gap-6">
+              <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                {link.product.image_urls?.[0] ? (
+                  <img
+                    src={link.product.image_urls[0]}
+                    alt={link.product.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                    <ExternalLink className="w-8 h-8 text-gray-400" />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold">{link.product.name}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Commission: {link.product.commission_rate}%
+                    </p>
+                  </div>
+                  <Badge variant={link.status === "active" ? "default" : "secondary"}>
+                    {link.status}
+                  </Badge>
                 </div>
-              </TableCell>
-              <TableCell>
-                {format(new Date(link.created_at), "MMM d, yyyy")}
-              </TableCell>
-              <TableCell>
-                <Badge
-                  variant={link.status === "active" ? "default" : "secondary"}
-                >
-                  {link.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-col">
-                  <span>{link.analytics.clicks} clicks</span>
-                  <span className="text-sm text-muted-foreground">
-                    {link.analytics.conversions} conversions
-                  </span>
+                <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                  {link.product.description}
+                </p>
+                <div className="mt-4 flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">
+                      Created {format(new Date(link.created_at), "MMM d, yyyy")}
+                    </p>
+                    <div className="flex gap-4">
+                      <span className="text-sm text-muted-foreground">
+                        {link.analytics.clicks} clicks
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {link.analytics.conversions} conversions
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyToClipboard(link.unique_code)}
+                    >
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Link
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => 
+                        window.open(`/ref/${link.unique_code}`, "_blank")
+                      }
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Preview
+                    </Button>
+                  </div>
                 </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="flex justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => copyToClipboard(link.unique_code)}
-                    className="h-8 w-8"
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => 
-                      window.open(`/ref/${link.unique_code}`, "_blank")
-                    }
-                    className="h-8 w-8"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
