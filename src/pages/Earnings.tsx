@@ -4,27 +4,48 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { CurrencySelector } from "@/components/CurrencySelector";
+import { useToast } from "@/hooks/use-toast";
 
 const Earnings = () => {
   const { formatAmount } = useCurrency();
+  const { toast } = useToast();
+  
   const { data: earnings, isLoading } = useQuery({
     queryKey: ["affiliate-earnings"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Authentication required",
+          description: "Please sign in to view your earnings",
+        });
+        throw new Error("Not authenticated");
+      }
 
       const { data, error } = await supabase
-        .from("affiliate_earnings_summary")
-        .select("*")
-        .eq("affiliate_id", user.id);
+        .from("affiliate_earnings")
+        .select("amount")
+        .eq("affiliate_id", user.id)
+        .eq("status", "paid");
 
-      if (error) throw error;
-      // Return first result or default values if no data exists
-      return data[0] || {
-        total_earnings: 0,
-        total_sales: 0,
-        first_sale_date: null,
-        last_sale_date: null
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error fetching earnings",
+          description: error.message,
+        });
+        throw error;
+      }
+
+      // Calculate total earnings and sales from the raw earnings data
+      const totalEarnings = data.reduce((sum, earning) => sum + Number(earning.amount), 0);
+      
+      return {
+        total_earnings: totalEarnings,
+        total_sales: data.length,
+        first_sale_date: data[0]?.created_at || null,
+        last_sale_date: data[data.length - 1]?.created_at || null,
       };
     },
   });
