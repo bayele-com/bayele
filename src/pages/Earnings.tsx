@@ -25,7 +25,7 @@ const Earnings = () => {
 
       const { data, error } = await supabase
         .from("affiliate_earnings")
-        .select("amount")
+        .select("amount, created_at")
         .eq("affiliate_id", user.id)
         .eq("status", "paid");
 
