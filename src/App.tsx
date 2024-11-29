@@ -8,6 +8,7 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Signup from "./pages/Signup";
+import Login from "./pages/Login";
 import Classifieds from "./pages/Classifieds";
 import PostClassified from "./pages/PostClassified";
 import Features from "./pages/Features";
@@ -20,6 +21,7 @@ import Settings from "./pages/Settings";
 import Messages from "./pages/Messages";
 import Links from "./pages/Links";
 import Earnings from "./pages/Earnings";
+import AffiliateProduct from "./pages/AffiliateProduct";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,7 +49,7 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/signup" element={<Signup />} />
-                  <Route path="/login" element={<Navigate to="/signup" replace />} />
+                  <Route path="/login" element={<Login />} />
                   <Route path="/classifieds" element={<Classifieds />} />
                   <Route path="/post-classified" element={<PostClassified />} />
                   <Route path="/features" element={<Features />} />
@@ -60,6 +62,7 @@ const App = () => {
                   <Route path="/messages" element={<Messages />} />
                   <Route path="/links" element={<Links />} />
                   <Route path="/earnings" element={<Earnings />} />
+                  <Route path="/ref/:code" element={<AffiliateProduct />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
                 <Toaster />

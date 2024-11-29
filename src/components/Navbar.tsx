@@ -36,7 +36,7 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const handleLoginClick = () => {
-    navigate("/signup");
+    navigate("/login");
   };
 
   return (
