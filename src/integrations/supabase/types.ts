@@ -378,6 +378,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          affiliate_earnings: number | null
           affiliate_id: string | null
           business_id: string | null
           commission_amount: number
@@ -387,12 +388,14 @@ export type Database = {
           metadata: Json | null
           payment_method: string | null
           payment_status: string | null
+          platform_fee: number | null
           product_id: string | null
           status: string | null
           total_amount: number
           updated_at: string | null
         }
         Insert: {
+          affiliate_earnings?: number | null
           affiliate_id?: string | null
           business_id?: string | null
           commission_amount: number
@@ -402,12 +405,14 @@ export type Database = {
           metadata?: Json | null
           payment_method?: string | null
           payment_status?: string | null
+          platform_fee?: number | null
           product_id?: string | null
           status?: string | null
           total_amount: number
           updated_at?: string | null
         }
         Update: {
+          affiliate_earnings?: number | null
           affiliate_id?: string | null
           business_id?: string | null
           commission_amount?: number
@@ -417,6 +422,7 @@ export type Database = {
           metadata?: Json | null
           payment_method?: string | null
           payment_status?: string | null
+          platform_fee?: number | null
           product_id?: string | null
           status?: string | null
           total_amount?: number
@@ -538,7 +544,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      affiliate_earnings_summary: {
+        Row: {
+          affiliate_id: string | null
+          affiliate_name: string | null
+          first_sale_date: string | null
+          last_sale_date: string | null
+          total_earnings: number | null
+          total_sales: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_commission_summary: {
+        Row: {
+          business_id: string | null
+          business_name: string | null
+          total_affiliate_earnings: number | null
+          total_commission_paid: number | null
+          total_orders: number | null
+          total_platform_fees: number | null
+          total_sales: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       [_ in never]: never
