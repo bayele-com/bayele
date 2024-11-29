@@ -13,7 +13,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const protectedRoutes = ['/dashboard', '/products', '/orders', '/post-classified'];
+const protectedRoutes = ['/dashboard', '/products', '/orders', '/post-classified', '/links'];
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -24,21 +24,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+    // Initialize session
+    const initSession = async () => {
+      try {
+        const { data: { session: currentSession }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+      } catch (error: any) {
+        console.error('Error fetching session:', error);
+        toast({
+          variant: "destructive",
+          title: "Authentication Error",
+          description: error.message,
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initSession();
+
+    // Set up auth state listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsLoading(false);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      setSession(currentSession);
-      setUser(currentSession?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [toast]);
 
   useEffect(() => {
     if (!isLoading && !user && protectedRoutes.includes(location.pathname)) {
@@ -47,7 +67,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         title: "Authentication required",
         description: "Please sign in to access this page",
       });
-      navigate('/signup', { state: { from: location.pathname } });
+      navigate('/login', { state: { from: location.pathname } });
     }
   }, [user, location.pathname, isLoading, navigate, toast]);
 
