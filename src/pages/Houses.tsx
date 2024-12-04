@@ -28,7 +28,8 @@ const Houses = () => {
         `)
         .eq('status', 'available');
 
-      if (location) {
+      // Only add city filter if a valid city is selected
+      if (location && (location === 'Yaounde' || location === 'Douala')) {
         query = query.eq('city', location);
       }
 
