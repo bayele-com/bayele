@@ -1,11 +1,11 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SearchFilters from "@/components/houses/SearchFilters";
 import ContactDialog from "@/components/houses/ContactDialog";
-import { SearchCommand } from "@/components/houses/SearchCommand";
 import PropertyList from "@/components/houses/PropertyList";
 import { useRentalProperties } from "@/hooks/useRentalProperties";
+import HouseHeader from "@/components/houses/HouseHeader";
+import HouseSearchSection from "@/components/houses/HouseSearchSection";
 
 const Houses = () => {
   const [location, setLocation] = useState("");
@@ -34,28 +34,16 @@ const Houses = () => {
       <Navbar />
       
       <main className="container mx-auto px-4 pt-24 pb-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Find Your Perfect Home
-          </h1>
-          <p className="text-lg text-gray-600">
-            Browse through our curated selection of rental properties in Yaoundé and Douala
-          </p>
-        </div>
-
-        <div className="max-w-5xl mx-auto mb-8 space-y-4">
-          <SearchCommand onSelect={setLocation} />
-          <SearchFilters
-            location={location}
-            setLocation={setLocation}
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            propertyType={propertyType}
-            setPropertyType={setPropertyType}
-            onSearch={handleSearch}
-          />
-        </div>
-
+        <HouseHeader />
+        <HouseSearchSection
+          location={location}
+          setLocation={setLocation}
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          propertyType={propertyType}
+          setPropertyType={setPropertyType}
+          onSearch={handleSearch}
+        />
         <PropertyList
           houses={houses}
           isLoading={isLoading}
