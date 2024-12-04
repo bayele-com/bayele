@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import HouseCard from "@/components/houses/HouseCard";
 import SearchFilters from "@/components/houses/SearchFilters";
 import ContactDialog from "@/components/houses/ContactDialog";
+import { SearchCommand } from "@/components/houses/SearchCommand";
 import type { RentalProperty } from "@/types/house";
 
 const Houses = () => {
@@ -77,7 +78,7 @@ const Houses = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-24 pb-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Find Your Perfect Home
@@ -87,7 +88,8 @@ const Houses = () => {
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto mb-8">
+        <div className="max-w-5xl mx-auto mb-8 space-y-4">
+          <SearchCommand onSelect={setLocation} />
           <SearchFilters
             location={location}
             setLocation={setLocation}
