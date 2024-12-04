@@ -13,6 +13,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Json } from "@/integrations/supabase/types";
+
+interface ContactInfo {
+  phone?: string;
+  email?: string;
+  whatsapp?: string;
+}
+
+interface HouseData {
+  id: string;
+  title: string;
+  location: string | null;
+  price: number;
+  image_urls: string[] | null;
+  subcategory: string | null;
+  contact_info: ContactInfo;
+}
 
 const Houses = () => {
   const [location, setLocation] = useState("");
@@ -58,7 +75,7 @@ const Houses = () => {
         throw error;
       }
       
-      return data;
+      return data as HouseData[];
     }
   });
 
@@ -116,10 +133,10 @@ const Houses = () => {
                 key={house.id}
                 id={house.id}
                 title={house.title}
-                location={house.location}
+                location={house.location || ""}
                 price={Number(house.price)}
                 imageUrl={house.image_urls?.[0]}
-                propertyType={house.subcategory}
+                propertyType={house.subcategory || ""}
                 onContactClick={handleContactClick}
               />
             ))}
@@ -139,8 +156,12 @@ const Houses = () => {
             <div className="bg-gray-50 p-4 rounded-lg">
               {selectedHouse?.contact_info && (
                 <>
-                  <p className="font-medium">Phone: {selectedHouse.contact_info.phone}</p>
-                  <p className="font-medium">Email: {selectedHouse.contact_info.email}</p>
+                  {selectedHouse.contact_info.phone && (
+                    <p className="font-medium">Phone: {selectedHouse.contact_info.phone}</p>
+                  )}
+                  {selectedHouse.contact_info.email && (
+                    <p className="font-medium">Email: {selectedHouse.contact_info.email}</p>
+                  )}
                   {selectedHouse.contact_info.whatsapp && (
                     <p className="font-medium">WhatsApp: {selectedHouse.contact_info.whatsapp}</p>
                   )}
