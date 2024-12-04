@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -7,7 +6,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Search, SlidersHorizontal } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface SearchFiltersProps {
   location: string;
@@ -28,49 +35,151 @@ const SearchFilters = ({
   setPropertyType,
   onSearch,
 }: SearchFiltersProps) => {
-  return (
-    <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="relative">
-          <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-          <Input
-            placeholder="Enter location..."
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="pl-10"
-            aria-label="Location search"
-          />
-        </div>
+  const cities = [
+    { value: "yaounde", label: "Yaoundé" },
+    { value: "douala", label: "Douala" },
+  ];
 
-        <Select value={priceRange} onValueChange={setPriceRange}>
-          <SelectTrigger aria-label="Select price range">
-            <SelectValue placeholder="Price Range" />
+  const propertyTypes = [
+    { value: "studio", label: "Studio" },
+    { value: "apartment", label: "Apartment" },
+    { value: "house", label: "House" },
+    { value: "room", label: "Single Room" },
+  ];
+
+  const priceRanges = [
+    { value: "0-50000", label: "0 - 50,000 FCFA" },
+    { value: "50000-100000", label: "50,000 - 100,000 FCFA" },
+    { value: "100000-200000", label: "100,000 - 200,000 FCFA" },
+    { value: "200000-300000", label: "200,000 - 300,000 FCFA" },
+    { value: "300000", label: "300,000+ FCFA" },
+  ];
+
+  const MobileFilters = () => (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="icon" className="lg:hidden">
+          <SlidersHorizontal className="h-4 w-4" />
+        </Button>
+      </SheetTrigger>
+      <SheetContent side="bottom" className="h-[80%]">
+        <SheetHeader>
+          <SheetTitle>Filter Properties</SheetTitle>
+        </SheetHeader>
+        <div className="space-y-4 mt-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">City</label>
+            <Select value={location} onValueChange={setLocation}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select city" />
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map((city) => (
+                  <SelectItem key={city.value} value={city.value}>
+                    {city.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Property Type</label>
+            <Select value={propertyType} onValueChange={setPropertyType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                {propertyTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Price Range</label>
+            <Select value={priceRange} onValueChange={setPriceRange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select price range" />
+              </SelectTrigger>
+              <SelectContent>
+                {priceRanges.map((range) => (
+                  <SelectItem key={range.value} value={range.value}>
+                    {range.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button onClick={onSearch} className="w-full">
+            Apply Filters
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+
+  return (
+    <div className="w-full space-y-4">
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search by location..."
+              className="pl-9"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+        </div>
+        <MobileFilters />
+      </div>
+
+      <div className="hidden lg:grid lg:grid-cols-3 gap-4">
+        <Select value={location} onValueChange={setLocation}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select city" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="0-50000">0 - 50,000 FCFA</SelectItem>
-            <SelectItem value="50000-100000">50,000 - 100,000 FCFA</SelectItem>
-            <SelectItem value="100000-200000">100,000 - 200,000 FCFA</SelectItem>
-            <SelectItem value="200000">200,000+ FCFA</SelectItem>
+            {cities.map((city) => (
+              <SelectItem key={city.value} value={city.value}>
+                {city.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
         <Select value={propertyType} onValueChange={setPropertyType}>
-          <SelectTrigger aria-label="Select property type">
-            <SelectValue placeholder="Property Type" />
+          <SelectTrigger>
+            <SelectValue placeholder="Select property type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="apartment">Apartment</SelectItem>
-            <SelectItem value="house">House</SelectItem>
-            <SelectItem value="studio">Studio</SelectItem>
-            <SelectItem value="room">Single Room</SelectItem>
+            {propertyTypes.map((type) => (
+              <SelectItem key={type.value} value={type.value}>
+                {type.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={priceRange} onValueChange={setPriceRange}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select price range" />
+          </SelectTrigger>
+          <SelectContent>
+            {priceRanges.map((range) => (
+              <SelectItem key={range.value} value={range.value}>
+                {range.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
-
-      <Button className="w-full mt-4" size="lg" onClick={onSearch}>
-        <Search className="mr-2 h-5 w-5" />
-        Search Properties
-      </Button>
     </div>
   );
 };

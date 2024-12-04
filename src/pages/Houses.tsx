@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Json } from "@/integrations/supabase/types";
 
 interface ContactInfo {
   phone?: string;
@@ -31,6 +30,43 @@ interface HouseData {
   contact_info: ContactInfo;
 }
 
+// Sample data for development
+const sampleListings: HouseData[] = [
+  {
+    id: "1",
+    title: "Modern Studio Apartment in Bastos",
+    location: "Bastos, Yaoundé",
+    price: 150000,
+    image_urls: ["https://images.unsplash.com/photo-1524230572899-a752b3835840"],
+    subcategory: "studio",
+    contact_info: {
+      whatsapp: "+237670000001",
+    }
+  },
+  {
+    id: "2",
+    title: "Spacious 3-Bedroom House in Bonanjo",
+    location: "Bonanjo, Douala",
+    price: 300000,
+    image_urls: ["https://images.unsplash.com/photo-1487958449943-2429e8be8625"],
+    subcategory: "house",
+    contact_info: {
+      whatsapp: "+237670000002",
+    }
+  },
+  {
+    id: "3",
+    title: "Cozy Single Room in Mvan",
+    location: "Mvan, Yaoundé",
+    price: 45000,
+    image_urls: ["https://images.unsplash.com/photo-1721322800607-8c38375eef04"],
+    subcategory: "room",
+    contact_info: {
+      whatsapp: "+237670000003",
+    }
+  },
+];
+
 const Houses = () => {
   const [location, setLocation] = useState("");
   const [priceRange, setPriceRange] = useState("");
@@ -38,44 +74,36 @@ const Houses = () => {
   const [selectedHouseId, setSelectedHouseId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const { data: houses, isLoading, error } = useQuery({
+  // For development, we'll use sample data instead of the actual query
+  const { data: houses, isLoading } = useQuery({
     queryKey: ['houses', location, priceRange, propertyType],
     queryFn: async () => {
-      let query = supabase
-        .from('classified_ads')
-        .select('*')
-        .eq('category', 'housing')
-        .eq('status', 'published');
-
+      // In development, return filtered sample data
+      let filteredHouses = [...sampleListings];
+      
       if (location) {
-        query = query.ilike('location', `%${location}%`);
+        filteredHouses = filteredHouses.filter(house => 
+          house.location?.toLowerCase().includes(location.toLowerCase())
+        );
       }
 
       if (propertyType) {
-        query = query.eq('subcategory', propertyType);
+        filteredHouses = filteredHouses.filter(house => 
+          house.subcategory === propertyType
+        );
       }
 
       if (priceRange) {
         const [min, max] = priceRange.split('-').map(Number);
-        if (max) {
-          query = query.gte('price', min).lte('price', max);
-        } else {
-          query = query.gte('price', min);
-        }
+        filteredHouses = filteredHouses.filter(house => {
+          if (max) {
+            return house.price >= min && house.price <= max;
+          }
+          return house.price >= min;
+        });
       }
 
-      const { data, error } = await query;
-      
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error fetching houses",
-          description: error.message
-        });
-        throw error;
-      }
-      
-      return data as HouseData[];
+      return filteredHouses;
     }
   });
 
@@ -85,16 +113,7 @@ const Houses = () => {
 
   const handleSearch = () => {
     // The search will be triggered automatically by the useQuery hook
-    // when the dependencies change
   };
-
-  if (error) {
-    toast({
-      variant: "destructive",
-      title: "Error",
-      description: "Failed to load houses. Please try again later."
-    });
-  }
 
   const selectedHouse = houses?.find(house => house.id === selectedHouseId);
 
@@ -102,25 +121,27 @@ const Houses = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Find Your Perfect Rental Home
+      <main className="container mx-auto px-4 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Find Your Perfect Home
           </h1>
           <p className="text-lg text-gray-600">
-            Browse through our curated selection of rental properties
+            Browse through our curated selection of rental properties in Yaoundé and Douala
           </p>
         </div>
 
-        <SearchFilters
-          location={location}
-          setLocation={setLocation}
-          priceRange={priceRange}
-          setPriceRange={setPriceRange}
-          propertyType={propertyType}
-          setPropertyType={setPropertyType}
-          onSearch={handleSearch}
-        />
+        <div className="max-w-5xl mx-auto mb-8">
+          <SearchFilters
+            location={location}
+            setLocation={setLocation}
+            priceRange={priceRange}
+            setPriceRange={setPriceRange}
+            propertyType={propertyType}
+            setPropertyType={setPropertyType}
+            onSearch={handleSearch}
+          />
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
@@ -156,14 +177,14 @@ const Houses = () => {
             <div className="bg-gray-50 p-4 rounded-lg">
               {selectedHouse?.contact_info && (
                 <>
-                  {selectedHouse.contact_info.phone && (
-                    <p className="font-medium">Phone: {selectedHouse.contact_info.phone}</p>
-                  )}
-                  {selectedHouse.contact_info.email && (
-                    <p className="font-medium">Email: {selectedHouse.contact_info.email}</p>
-                  )}
                   {selectedHouse.contact_info.whatsapp && (
-                    <p className="font-medium">WhatsApp: {selectedHouse.contact_info.whatsapp}</p>
+                    <Button
+                      className="w-full"
+                      onClick={() => window.open(`https://wa.me/${selectedHouse.contact_info.whatsapp}`, '_blank')}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Contact via WhatsApp
+                    </Button>
                   )}
                 </>
               )}
