@@ -8,23 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "../ImageUpload";
-import { toast } from "sonner";
-
-const MAX_FILE_SIZE = 512000; // 0.5MB in bytes
-const MAX_FILES = 7;
-
-const categories = [
-  { value: "rental_home", label: "Rental Home" },
-  { value: "furnished_apartment", label: "Furnished Apartment" },
-  { value: "announcements", label: "Announcements" },
-  { value: "jobs", label: "Jobs" },
-  { value: "miscellaneous", label: "Miscellaneous" },
-];
-
-const locations = [
-  { value: "Yaounde", label: "Yaoundé" },
-  { value: "Douala", label: "Douala" },
-];
+import ManagementOptions from "./ManagementOptions";
+import { cameroonRegions } from "@/data/locations";
 
 const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -34,12 +19,13 @@ const formSchema = z.object({
   category: z.string().min(1, "Category is required"),
   location: z.string().min(1, "Location is required"),
   price: z.string().optional(),
+  managementType: z.string().optional(),
   contact: z.object({
     email: z.string().email().optional(),
     phone: z.string().optional(),
     whatsapp: z.string().optional(),
   }),
-  image_urls: z.array(z.string()).max(MAX_FILES, `Maximum ${MAX_FILES} images allowed`),
+  image_urls: z.array(z.string()).max(7, "Maximum 7 images allowed"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -48,8 +34,17 @@ interface ImprovedClassifiedFormProps {
   onSubmit: (data: FormData) => Promise<void>;
 }
 
+const categories = [
+  { value: "rental_home", label: "Rental Home" },
+  { value: "furnished_apartment", label: "Furnished Apartment" },
+  { value: "announcements", label: "Announcements" },
+  { value: "jobs", label: "Jobs" },
+  { value: "miscellaneous", label: "Miscellaneous" },
+];
+
 const ImprovedClassifiedForm = ({ onSubmit }: ImprovedClassifiedFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -61,6 +56,7 @@ const ImprovedClassifiedForm = ({ onSubmit }: ImprovedClassifiedFormProps) => {
       category: "",
       location: "",
       price: "",
+      managementType: "self",
       contact: {
         email: "",
         phone: "",
@@ -70,14 +66,13 @@ const ImprovedClassifiedForm = ({ onSubmit }: ImprovedClassifiedFormProps) => {
     },
   });
 
+  const showManagementOptions = ["rental_home", "furnished_apartment"].includes(selectedCategory);
+
   const handleSubmit = async (data: FormData) => {
     try {
       setIsSubmitting(true);
       await onSubmit(data);
       form.reset();
-      toast.success("Ad submitted successfully!");
-    } catch (error) {
-      toast.error("Failed to submit ad. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -117,25 +112,17 @@ const ImprovedClassifiedForm = ({ onSubmit }: ImprovedClassifiedFormProps) => {
 
         <FormField
           control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter a descriptive title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="category"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Category</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select 
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  setSelectedCategory(value);
+                }} 
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
@@ -154,6 +141,42 @@ const ImprovedClassifiedForm = ({ onSubmit }: ImprovedClassifiedFormProps) => {
           )}
         />
 
+        {showManagementOptions && (
+          <ManagementOptions form={form} category={selectedCategory} />
+        )}
+
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter a descriptive title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea 
+                  placeholder="Provide detailed information"
+                  className="min-h-[100px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="location"
@@ -163,13 +186,13 @@ const ImprovedClassifiedForm = ({ onSubmit }: ImprovedClassifiedFormProps) => {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a location" />
+                    <SelectValue placeholder="Select location" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {locations.map((location) => (
-                    <SelectItem key={location.value} value={location.value}>
-                      {location.label}
+                  {cameroonRegions.map((loc) => (
+                    <SelectItem key={loc.capital} value={loc.capital}>
+                      {loc.capital}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -195,33 +218,15 @@ const ImprovedClassifiedForm = ({ onSubmit }: ImprovedClassifiedFormProps) => {
 
         <FormField
           control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Provide detailed information about your ad"
-                  className="min-h-[150px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="image_urls"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Images (Max {MAX_FILES} images, 0.5MB each)</FormLabel>
+              <FormLabel>Images (Max 7 images, 0.5MB each)</FormLabel>
               <FormControl>
                 <ImageUpload
                   value={field.value}
                   onChange={field.onChange}
-                  maxFiles={MAX_FILES}
+                  maxFiles={7}
                 />
               </FormControl>
               <FormMessage />

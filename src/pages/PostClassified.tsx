@@ -17,13 +17,16 @@ const PostClassified = () => {
           title: formData.title,
           description: formData.description,
           category: formData.category,
-          ad_type: formData.ad_type || 'offer', // Add required ad_type field
+          ad_type: formData.ad_type || 'offer',
           location: formData.location,
           price: formData.price ? parseFloat(formData.price) : null,
           contact_info: {
             first_name: formData.firstName,
             last_name: formData.lastName,
-            ...formData.contact
+            ...formData.contact,
+            management_type: formData.managementType,
+            listing_fee: formData.listingFee,
+            commission_rate: formData.commissionRate
           },
           image_urls: formData.image_urls,
           status: "pending",
@@ -33,27 +36,29 @@ const PostClassified = () => {
 
       toast({
         title: "Success",
-        description: "Your classified ad has been submitted for review",
+        description: "Your ad has been submitted for review",
       });
       navigate("/classifieds");
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message || "Failed to post classified ad. Please try again.",
+        description: error.message || "Failed to submit ad. Please try again.",
       });
       throw error;
     }
   };
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="pt-24 pb-16 px-4 md:px-8">
+      <div className="pt-20 pb-16 px-4 md:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Post a Classified Ad</h1>
-          <p className="text-gray-600 mb-8">Fill in the details below to submit your ad for review</p>
-          <ImprovedClassifiedForm onSubmit={handleSubmit} />
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-center">Submit your Ad</h1>
+          <p className="text-gray-600 mb-8 text-center text-sm md:text-base">Fill in the details below to submit your ad for review</p>
+          <div className="bg-white rounded-lg shadow-sm p-4 md:p-6">
+            <ImprovedClassifiedForm onSubmit={handleSubmit} />
+          </div>
         </div>
       </div>
       <Footer />
