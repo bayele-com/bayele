@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MegaphoneIcon, ListChecks, MessageSquare, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Hero = () => {
@@ -9,40 +9,64 @@ const Hero = () => {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px] bg-[position:center] mix-blend-overlay" />
       </div>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
         <div className="space-y-8 animate-fade-up">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900">
-            Earn More,{" "}
-            <span className="text-primary">Do Less.</span>
+            Find Your Perfect Space,{" "}
+            <span className="text-primary">Make It Home.</span>
           </h1>
           
           <p className="max-w-2xl mx-auto text-xl text-gray-600">
-            Promote products, share ads, and earn effortlessly on the most intuitive platform for digital entrepreneurs.
+            Discover rental homes, promote products, share ads, and earn effortlessly on the most intuitive platform.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+            <Link
+              to="/houses"
+              className="glass-card hover-scale p-6 rounded-xl flex flex-col items-center text-center space-y-3"
+            >
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <Home className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold">Find a House</h3>
+              <p className="text-sm text-gray-600">Browse available rentals</p>
+              <ArrowRight className="w-5 h-5 text-primary" />
+            </Link>
+            
             <Link
               to="/signup?type=affiliate"
-              className="glass-card hover-scale inline-flex items-center px-6 py-3 rounded-full text-primary"
+              className="glass-card hover-scale p-6 rounded-xl flex flex-col items-center text-center space-y-3"
             >
-              Promote and Earn
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <MegaphoneIcon className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold">Promote and Earn</h3>
+              <p className="text-sm text-gray-600">Join our affiliate program</p>
+              <ArrowRight className="w-5 h-5 text-primary" />
             </Link>
             
             <Link
               to="/signup?type=business"
-              className="glass-card hover-scale inline-flex items-center px-6 py-3 rounded-full text-primary"
+              className="glass-card hover-scale p-6 rounded-xl flex flex-col items-center text-center space-y-3"
             >
-              List and Sell
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <ListChecks className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold">List and Sell</h3>
+              <p className="text-sm text-gray-600">Create your business profile</p>
+              <ArrowRight className="w-5 h-5 text-primary" />
             </Link>
             
             <Link
               to="/signup?type=classified"
-              className="glass-card hover-scale inline-flex items-center px-6 py-3 rounded-full text-primary"
+              className="glass-card hover-scale p-6 rounded-xl flex flex-col items-center text-center space-y-3"
             >
-              Post Ads
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                <MessageSquare className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-semibold">Post Ads</h3>
+              <p className="text-sm text-gray-600">Share your listings</p>
+              <ArrowRight className="w-5 h-5 text-primary" />
             </Link>
           </div>
         </div>
