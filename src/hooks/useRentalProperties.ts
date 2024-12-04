@@ -15,45 +15,49 @@ export const useRentalProperties = ({ location, priceRange, propertyType }: UseR
   return useQuery({
     queryKey: ['houses', location, priceRange, propertyType],
     queryFn: async () => {
-      let query = supabase
-        .from('rental_properties')
-        .select(`
-          *,
-          neighborhood:neighborhoods(name, city)
-        `)
-        .eq('status', 'available');
+      try {
+        let query = supabase
+          .from('rental_properties')
+          .select(`
+            *,
+            neighborhood:neighborhoods(name, city)
+          `)
+          .eq('status', 'available');
 
-      if (location && (location === 'Yaounde' || location === 'Douala')) {
-        query = query.eq('city', location);
-      }
-
-      if (propertyType) {
-        query = query.eq('property_type', propertyType);
-      }
-
-      if (priceRange) {
-        const [min, max] = priceRange.split('-').map(Number);
-        if (max) {
-          query = query.gte('price', min).lte('price', max);
-        } else {
-          query = query.gte('price', min);
+        if (location && (location === 'Yaounde' || location === 'Douala')) {
+          query = query.eq('city', location);
         }
-      }
 
-      const { data, error } = await query;
+        if (propertyType) {
+          query = query.eq('property_type', propertyType);
+        }
 
-      if (error) {
+        if (priceRange) {
+          const [min, max] = priceRange.split('-').map(Number);
+          if (max) {
+            query = query.gte('price', min).lte('price', max);
+          } else {
+            query = query.gte('price', min);
+          }
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          throw error;
+        }
+
+        return data as (RentalProperty & {
+          neighborhood: { name: string; city: string };
+        })[];
+      } catch (error: any) {
         toast({
           variant: "destructive",
           title: "Error loading properties",
-          description: "Please try again later",
+          description: error.message || "Please try again later",
         });
         throw error;
       }
-
-      return data as (RentalProperty & {
-        neighborhood: { name: string; city: string };
-      })[];
     },
     staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
     gcTime: 1000 * 60 * 15, // Keep unused data in cache for 15 minutes

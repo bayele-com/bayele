@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 interface Props {
   children: React.ReactNode;
   fallback?: React.ReactNode;
+  onReset?: () => void;
 }
 
 interface State {
@@ -29,7 +30,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   private handleRetry = () => {
     this.setState({ hasError: false, error: null });
-    window.location.reload();
+    if (this.props.onReset) {
+      this.props.onReset();
+    } else {
+      window.location.reload();
+    }
   };
 
   public render() {
@@ -43,18 +48,22 @@ export class ErrorBoundary extends React.Component<Props, State> {
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Something went wrong</AlertTitle>
           <AlertDescription className="mt-2 space-y-4">
-            <p>{this.state.error?.message}</p>
+            <p className="text-sm">
+              {this.state.error?.message || "An unexpected error occurred"}
+            </p>
             <p className="text-sm text-gray-500">
               Please try again or contact support if the problem persists.
             </p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={this.handleRetry}
-            >
-              <RefreshCcw className="w-4 h-4 mr-2" />
-              Try again
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={this.handleRetry}
+              >
+                <RefreshCcw className="w-4 h-4 mr-2" />
+                Try again
+              </Button>
+            </div>
           </AlertDescription>
         </Alert>
       );

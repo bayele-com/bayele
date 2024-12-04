@@ -9,18 +9,34 @@ interface ClassifiedImageProps {
 
 const ClassifiedImage = ({ imageUrl, title, featured }: ClassifiedImageProps) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  const handleLoad = () => {
+    setIsLoading(false);
+    setHasError(false);
+  };
+
+  const handleError = () => {
+    setIsLoading(false);
+    setHasError(true);
+  };
 
   return (
     <div className="relative">
-      <div className={`w-full h-48 bg-gray-100 rounded-t-lg ${isLoading ? 'animate-pulse' : ''}`}>
+      <div 
+        className={`w-full h-48 bg-gray-100 rounded-t-lg overflow-hidden ${
+          isLoading ? 'animate-pulse' : ''
+        }`}
+      >
         <img
           src={imageUrl || '/placeholder.svg'}
           alt={title}
           className={`w-full h-48 object-cover rounded-t-lg transition-opacity duration-300 ${
-            isLoading ? 'opacity-0' : 'opacity-100'
+            isLoading || hasError ? 'opacity-0' : 'opacity-100'
           }`}
           loading="lazy"
-          onLoad={() => setIsLoading(false)}
+          onLoad={handleLoad}
+          onError={handleError}
         />
       </div>
       {featured && (
