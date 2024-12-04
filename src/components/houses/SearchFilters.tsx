@@ -44,6 +44,7 @@ const SearchFilters = ({
   const propertyTypes = [
     { value: "studio", label: "Studio" },
     { value: "apartment", label: "Apartment" },
+    { value: "furnished_apartment", label: "Furnished Apartment" },
     { value: "house", label: "House" },
     { value: "room", label: "Single Room" },
   ];

@@ -1,67 +1,22 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import HouseCard from "@/components/houses/HouseCard";
 import SearchFilters from "@/components/houses/SearchFilters";
 import ContactDialog from "@/components/houses/ContactDialog";
 import { SearchCommand } from "@/components/houses/SearchCommand";
-import type { RentalProperty } from "@/types/house";
+import PropertyList from "@/components/houses/PropertyList";
+import { useRentalProperties } from "@/hooks/useRentalProperties";
 
 const Houses = () => {
   const [location, setLocation] = useState("");
   const [priceRange, setPriceRange] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [selectedHouseId, setSelectedHouseId] = useState<string | null>(null);
-  const { toast } = useToast();
 
-  const { data: houses, isLoading } = useQuery({
-    queryKey: ['houses', location, priceRange, propertyType],
-    queryFn: async () => {
-      let query = supabase
-        .from('rental_properties')
-        .select(`
-          *,
-          neighborhood:neighborhoods(name, city)
-        `)
-        .eq('status', 'available');
-
-      // Only add city filter if a valid city is selected
-      if (location && (location === 'Yaounde' || location === 'Douala')) {
-        query = query.eq('city', location);
-      }
-
-      if (propertyType) {
-        query = query.eq('property_type', propertyType);
-      }
-
-      if (priceRange) {
-        const [min, max] = priceRange.split('-').map(Number);
-        if (max) {
-          query = query.gte('price', min).lte('price', max);
-        } else {
-          query = query.gte('price', min);
-        }
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Error loading properties",
-          description: "Please try again later",
-        });
-        throw error;
-      }
-
-      return data as (RentalProperty & {
-        neighborhood: { name: string; city: string };
-      })[];
-    }
+  const { data: houses, isLoading } = useRentalProperties({
+    location,
+    priceRange,
+    propertyType,
   });
 
   const handleContactClick = (id: string) => {
@@ -101,26 +56,11 @@ const Houses = () => {
           />
         </div>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {houses?.map((house) => (
-              <HouseCard
-                key={house.id}
-                id={house.id}
-                title={house.title}
-                location={house.neighborhood.name}
-                price={house.price}
-                imageUrl={house.image_urls?.[0]}
-                propertyType={house.property_type}
-                onContactClick={handleContactClick}
-              />
-            ))}
-          </div>
-        )}
+        <PropertyList
+          houses={houses}
+          isLoading={isLoading}
+          onContactClick={handleContactClick}
+        />
       </main>
 
       <ContactDialog
