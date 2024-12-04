@@ -54,6 +54,10 @@ export const useRentalProperties = ({ location, priceRange, propertyType }: UseR
       return data as (RentalProperty & {
         neighborhood: { name: string; city: string };
       })[];
-    }
+    },
+    staleTime: 1000 * 60 * 5, // Data stays fresh for 5 minutes
+    gcTime: 1000 * 60 * 15, // Keep unused data in cache for 15 minutes
+    retry: 2,
+    refetchOnWindowFocus: false,
   });
 };
