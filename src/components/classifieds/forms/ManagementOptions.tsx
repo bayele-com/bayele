@@ -28,11 +28,11 @@ const ManagementOptions = ({ form, category }: ManagementOptionsProps) => {
                   <RadioGroupItem value="self" />
                 </FormControl>
                 <FormLabel className="font-normal">
-                  I will manage it myself
+                  I will manage clients myself
                   <FormDescription>
                     {isFurnished 
-                      ? "5,000 FCFA monthly listing fee per property"
-                      : "Standard listing, no additional fees"}
+                      ? "3,500 FCFA monthly listing fee, no additional fees for successful rentals"
+                      : "3,500 FCFA monthly listing fee, no additional fees for successful rentals"}
                   </FormDescription>
                 </FormLabel>
               </FormItem>
@@ -44,7 +44,7 @@ const ManagementOptions = ({ form, category }: ManagementOptionsProps) => {
                   I want Bayele to manage my clients
                   <FormDescription>
                     {isFurnished 
-                      ? "10% fee for every paid booking"
+                      ? "15% fee for every paid booking"
                       : "2,500 FCFA monthly listing fee + 30% of one month's rent for successful rentals"}
                   </FormDescription>
                 </FormLabel>
