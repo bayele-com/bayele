@@ -23,7 +23,6 @@ const HouseSearchSection = ({
 }: HouseSearchSectionProps) => {
   return (
     <div className="max-w-5xl mx-auto mb-8 space-y-4">
-      <SearchCommand onSelect={setLocation} />
       <SearchFilters
         location={location}
         setLocation={setLocation}
