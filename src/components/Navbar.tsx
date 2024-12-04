@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, House } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import NavLink from "./navbar/NavLink";
 import LanguageSelector from "./navbar/LanguageSelector";
@@ -58,6 +58,10 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
+            <NavLink to="/houses" className="flex items-center space-x-2">
+              <House className="h-4 w-4" />
+              <span>Find a House</span>
+            </NavLink>
             <NavLink to="/how-it-works">How It Works</NavLink>
             <NavLink to="/features">Features</NavLink>
             <NavLink to="/classifieds">Classifieds</NavLink>
