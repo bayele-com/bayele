@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
@@ -72,13 +72,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 toast({
                   title: "Profile updated",
                   description: "Your profile has been updated successfully.",
-                });
-                break;
-              case 'USER_DELETED':
-                toast({
-                  variant: "destructive",
-                  title: "Account deleted",
-                  description: "Your account has been deleted successfully.",
                 });
                 break;
               case 'PASSWORD_RECOVERY':
