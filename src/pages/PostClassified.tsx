@@ -17,6 +17,7 @@ const PostClassified = () => {
           title: formData.title,
           description: formData.description,
           category: formData.category,
+          ad_type: formData.ad_type || 'offer', // Add required ad_type field
           location: formData.location,
           price: formData.price ? parseFloat(formData.price) : null,
           contact_info: {
@@ -39,7 +40,7 @@ const PostClassified = () => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to post classified ad. Please try again.",
+        description: error.message || "Failed to post classified ad. Please try again.",
       });
       throw error;
     }
