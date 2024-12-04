@@ -18,12 +18,6 @@ const userTypes = [
     description: "List your products and manage sales",
     icon: "🏪",
   },
-  {
-    id: "classified",
-    title: "Classified User",
-    description: "Post ads and reach potential customers",
-    icon: "📢",
-  },
 ];
 
 const Signup = () => {
@@ -51,7 +45,7 @@ const Signup = () => {
         </div>
 
         {!selectedType ? (
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             {userTypes.map((type) => (
               <Card
                 key={type.id}

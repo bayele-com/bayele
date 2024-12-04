@@ -9,9 +9,16 @@ interface ImageUploadProps {
   maxFiles?: number;
 }
 
-export const ImageUpload = ({ value = [], onChange, maxFiles = 4 }: ImageUploadProps) => {
+export const ImageUpload = ({ value = [], onChange, maxFiles = 7 }: ImageUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+
+  const validateFile = (file: File) => {
+    const maxSize = 512000; // 0.5MB in bytes
+    if (file.size > maxSize) {
+      throw new Error(`File size must be less than 0.5MB`);
+    }
+  };
 
   const optimizeImage = async (file: File): Promise<File> => {
     return new Promise((resolve) => {
@@ -67,6 +74,7 @@ export const ImageUpload = ({ value = [], onChange, maxFiles = 4 }: ImageUploadP
           return;
         }
 
+        validateFile(file);
         setIsUploading(true);
         const optimizedFile = await optimizeImage(file);
         const fileExt = optimizedFile.name.split(".").pop();
@@ -91,7 +99,7 @@ export const ImageUpload = ({ value = [], onChange, maxFiles = 4 }: ImageUploadP
         toast({
           variant: "destructive",
           title: "Upload failed",
-          description: "Please try again later",
+          description: error.message || "Please try again later",
         });
       } finally {
         setIsUploading(false);
@@ -113,7 +121,7 @@ export const ImageUpload = ({ value = [], onChange, maxFiles = 4 }: ImageUploadP
 
   return (
     <div>
-      <div className="mb-4 grid grid-cols-2 gap-4">
+      <div className="mb-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {value.map((url) => (
           <div key={url} className="relative aspect-square">
             <img
@@ -133,8 +141,8 @@ export const ImageUpload = ({ value = [], onChange, maxFiles = 4 }: ImageUploadP
         ))}
       </div>
       {value.length < maxFiles && (
-        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-12">
-          <label className="cursor-pointer">
+        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 sm:p-12">
+          <label className="cursor-pointer text-center">
             <input
               type="file"
               accept="image/*"
@@ -149,7 +157,7 @@ export const ImageUpload = ({ value = [], onChange, maxFiles = 4 }: ImageUploadP
                 <Upload className="h-8 w-8 text-gray-400" />
               )}
               <span className="text-sm text-gray-600">
-                {isUploading ? "Uploading..." : "Upload Image"}
+                {isUploading ? "Uploading..." : "Upload Image (Max 0.5MB)"}
               </span>
             </div>
           </label>
