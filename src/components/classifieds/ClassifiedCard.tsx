@@ -24,8 +24,8 @@ interface ClassifiedCardProps {
 
 const ClassifiedCard = ({ ad, featured }: ClassifiedCardProps) => {
   const contactInfo = ad.contact_info as {
-    website?: string;
     whatsapp?: string;
+    phone?: string;
   };
 
   return (

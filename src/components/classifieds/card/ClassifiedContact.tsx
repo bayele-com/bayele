@@ -1,12 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Globe, Mail, MessageSquare } from "lucide-react";
-import { Json } from "@/integrations/supabase/types";
+import { MessageSquare, Phone } from "lucide-react";
 
 interface ClassifiedContactProps {
   contactInfo: {
-    website?: string;
-    email?: string;
     whatsapp?: string;
+    phone?: string;
   };
 }
 
@@ -15,18 +13,12 @@ const ClassifiedContact = ({ contactInfo }: ClassifiedContactProps) => {
     window.open(`https://wa.me/${phone}`, '_blank');
   };
 
+  const handlePhoneClick = (phone: string) => {
+    window.open(`tel:${phone}`, '_blank');
+  };
+
   return (
     <div className="flex gap-2 mt-4">
-      {contactInfo.website && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => window.open(contactInfo.website, '_blank')}
-        >
-          <Globe className="w-4 h-4 mr-2" />
-          Website
-        </Button>
-      )}
       {contactInfo.whatsapp && (
         <Button
           variant="outline"
@@ -35,6 +27,16 @@ const ClassifiedContact = ({ contactInfo }: ClassifiedContactProps) => {
         >
           <MessageSquare className="w-4 h-4 mr-2" />
           WhatsApp
+        </Button>
+      )}
+      {contactInfo.phone && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePhoneClick(contactInfo.phone!)}
+        >
+          <Phone className="w-4 h-4 mr-2" />
+          Phone
         </Button>
       )}
     </div>
