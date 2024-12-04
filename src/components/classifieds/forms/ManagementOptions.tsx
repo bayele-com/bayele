@@ -31,8 +31,8 @@ const ManagementOptions = ({ form, category }: ManagementOptionsProps) => {
                   I will manage clients myself
                   <FormDescription>
                     {isFurnished 
-                      ? "3,500 FCFA monthly listing fee, no additional fees for successful rentals"
-                      : "3,500 FCFA monthly listing fee, no additional fees for successful rentals"}
+                      ? "4,500 FCFA monthly listing fee, no additional fees for successful rentals"
+                      : "4,500 FCFA monthly listing fee, no additional fees for successful rentals"}
                   </FormDescription>
                 </FormLabel>
               </FormItem>
