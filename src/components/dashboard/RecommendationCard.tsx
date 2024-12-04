@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Star } from "lucide-react";
+import { Clock, Star, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Recommendation {
   id: string;
@@ -13,9 +14,10 @@ interface Recommendation {
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
+  onAction?: () => void;
 }
 
-const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
+const RecommendationCard = ({ recommendation, onAction }: RecommendationCardProps) => {
   const priorityColors = {
     high: 'bg-red-100 text-red-800',
     medium: 'bg-yellow-100 text-yellow-800',
@@ -32,15 +34,25 @@ const RecommendationCard = ({ recommendation }: RecommendationCardProps) => {
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-600 mb-4">{recommendation.description}</p>
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
             <Star className="h-4 w-4" />
             <span>{recommendation.category}</span>
-          </div>
-          <div className="flex items-center gap-1">
+            <span className="mx-2">•</span>
             <Clock className="h-4 w-4" />
             <span>{new Date(recommendation.createdAt).toLocaleDateString()}</span>
           </div>
+          {onAction && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-primary hover:text-primary/80"
+              onClick={onAction}
+            >
+              Take Action
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

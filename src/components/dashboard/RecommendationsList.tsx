@@ -1,46 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import RecommendationCard from "./RecommendationCard";
+import { generateRecommendations } from "@/services/recommendationService";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock recommendations for testing
-const mockRecommendations = [
-  {
-    id: "1",
-    title: "Complete Your Profile",
-    description: "Add your contact information and profile picture to increase trust with potential clients.",
-    priority: "high",
-    category: "Profile",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    title: "Add Property Images",
-    description: "Properties with high-quality images receive 2x more inquiries.",
-    priority: "medium",
-    category: "Listings",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "3",
-    title: "Verify Your Account",
-    description: "Verified accounts receive preferential placement in search results.",
-    priority: "high",
-    category: "Account",
-    createdAt: new Date().toISOString(),
-  },
-] as const;
-
 const RecommendationsList = () => {
-  const { data: recommendations, isLoading } = useQuery({
-    queryKey: ["recommendations"],
+  const { user } = useAuth();
+
+  const { data: profile, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["profile", user?.id],
     queryFn: async () => {
-      // In production, this would fetch from the backend
-      return mockRecommendations;
+      if (!user?.id) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
     },
+    enabled: !!user?.id,
   });
 
-  if (isLoading) {
+  if (isProfileLoading) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
@@ -50,12 +34,33 @@ const RecommendationsList = () => {
     );
   }
 
+  const recommendations = generateRecommendations(
+    profile?.user_type || "user",
+    profile
+  );
+
   return (
     <div className="space-y-4">
-      {recommendations?.map((recommendation) => (
+      {recommendations.map((recommendation) => (
         <RecommendationCard
           key={recommendation.id}
           recommendation={recommendation}
+          onAction={() => {
+            // Handle action based on recommendation category
+            switch (recommendation.category) {
+              case "Profile":
+                window.location.href = "/settings";
+                break;
+              case "Listings":
+                window.location.href = "/houses";
+                break;
+              case "Earnings":
+                window.location.href = "/earnings";
+                break;
+              default:
+                window.location.href = "/dashboard";
+            }
+          }}
         />
       ))}
     </div>
