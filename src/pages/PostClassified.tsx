@@ -12,23 +12,10 @@ const PostClassified = () => {
 
   const handleSubmit = async (formData: any) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          variant: "destructive",
-          title: "Authentication required",
-          description: "Please sign in to post a classified ad",
-        });
-        navigate("/login");
-        return;
-      }
-
       const { error } = await supabase
         .from("classified_ads")
         .insert({
           ...formData,
-          user_id: user.id,
           status: "pending",
         });
 

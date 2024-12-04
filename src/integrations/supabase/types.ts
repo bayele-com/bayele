@@ -74,6 +74,13 @@ export type Database = {
             foreignKeyName: "ad_interactions_ad_id_fkey"
             columns: ["ad_id"]
             isOneToOne: false
+            referencedRelation: "admin_pending_ads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ad_interactions_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
             referencedRelation: "classified_ads"
             referencedColumns: ["id"]
           },
@@ -184,6 +191,8 @@ export type Database = {
       classified_ads: {
         Row: {
           ad_type: string
+          approved_at: string | null
+          approved_by: string | null
           category: string
           contact_info: Json
           created_at: string | null
@@ -195,6 +204,7 @@ export type Database = {
           location: string | null
           metadata: Json | null
           price: number | null
+          rejection_reason: string | null
           status: string | null
           subcategory: string | null
           title: string
@@ -202,6 +212,8 @@ export type Database = {
         }
         Insert: {
           ad_type: string
+          approved_at?: string | null
+          approved_by?: string | null
           category: string
           contact_info: Json
           created_at?: string | null
@@ -213,6 +225,7 @@ export type Database = {
           location?: string | null
           metadata?: Json | null
           price?: number | null
+          rejection_reason?: string | null
           status?: string | null
           subcategory?: string | null
           title: string
@@ -220,6 +233,8 @@ export type Database = {
         }
         Update: {
           ad_type?: string
+          approved_at?: string | null
+          approved_by?: string | null
           category?: string
           contact_info?: Json
           created_at?: string | null
@@ -231,6 +246,7 @@ export type Database = {
           location?: string | null
           metadata?: Json | null
           price?: number | null
+          rejection_reason?: string | null
           status?: string | null
           subcategory?: string | null
           title?: string
@@ -665,6 +681,21 @@ export type Database = {
       }
     }
     Views: {
+      admin_pending_ads: {
+        Row: {
+          ad_type: string | null
+          category: string | null
+          created_at: string | null
+          id: string | null
+          location: string | null
+          price: number | null
+          status: string | null
+          submitter_email: string | null
+          submitter_name: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
       affiliate_earnings_summary: {
         Row: {
           affiliate_id: string | null

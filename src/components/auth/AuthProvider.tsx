@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import type { User, Session, AuthChangeEvent } from "@supabase/supabase-js";
+import type { User, Session } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
@@ -14,7 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const protectedRoutes = ['/dashboard', '/products', '/orders', '/post-classified', '/links'];
+const protectedRoutes = ['/dashboard', '/products', '/orders', '/links'];
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
