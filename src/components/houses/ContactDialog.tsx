@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Mail, Phone } from "lucide-react";
+import { MessageSquare, Phone } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 
 interface ContactInfo {
   phone?: string;
-  email?: string;
   whatsapp?: string;
 }
 
@@ -38,9 +37,6 @@ const ContactDialog = ({ isOpen, onOpenChange, title, contactInfo }: ContactDial
     switch (type) {
       case 'whatsapp':
         window.open(`https://wa.me/${value}`, '_blank');
-        break;
-      case 'email':
-        window.open(`mailto:${value}`, '_blank');
         break;
       case 'phone':
         window.open(`tel:${value}`, '_blank');
@@ -71,16 +67,6 @@ const ContactDialog = ({ isOpen, onOpenChange, title, contactInfo }: ContactDial
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Contact via WhatsApp
-              </Button>
-            )}
-            {contactInfo?.email && (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => handleContactClick('email', contactInfo.email)}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Contact via Email
               </Button>
             )}
             {contactInfo?.phone && (
