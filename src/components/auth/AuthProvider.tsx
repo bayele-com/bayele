@@ -49,20 +49,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(currentSession?.user ?? null);
 
             // Handle auth events
-            if (event === 'SIGNED_OUT') {
-              setUser(null);
-              setSession(null);
-              navigate('/login');
-              toast({
-                title: "Signed out successfully",
-              });
-            } else if (event === 'SIGNED_IN' && currentSession) {
-              const returnTo = location.state?.from || '/dashboard';
-              navigate(returnTo);
-              toast({
-                title: "Signed in successfully",
-                description: `Welcome back${currentSession.user.email ? `, ${currentSession.user.email}` : ''}!`,
-              });
+            switch (event) {
+              case 'SIGNED_OUT':
+                setUser(null);
+                setSession(null);
+                navigate('/login');
+                toast({
+                  title: "Signed out successfully",
+                });
+                break;
+              case 'SIGNED_IN':
+                if (currentSession) {
+                  const returnTo = location.state?.from || '/dashboard';
+                  navigate(returnTo);
+                  toast({
+                    title: "Signed in successfully",
+                    description: `Welcome back${currentSession.user.email ? `, ${currentSession.user.email}` : ''}!`,
+                  });
+                }
+                break;
+              case 'USER_UPDATED':
+                toast({
+                  title: "Profile updated",
+                  description: "Your profile has been updated successfully.",
+                });
+                break;
+              case 'USER_DELETED':
+                toast({
+                  variant: "destructive",
+                  title: "Account deleted",
+                  description: "Your account has been deleted successfully.",
+                });
+                break;
+              case 'PASSWORD_RECOVERY':
+                toast({
+                  title: "Password recovery email sent",
+                  description: "Please check your email to reset your password.",
+                });
+                break;
             }
           }
         });
