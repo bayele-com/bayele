@@ -22,6 +22,7 @@ import Messages from "./pages/Messages";
 import Links from "./pages/Links";
 import Earnings from "./pages/Earnings";
 import AffiliateProduct from "./pages/AffiliateProduct";
+import Houses from "./pages/Houses";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +51,7 @@ const App = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/houses" element={<Houses />} />
                   <Route path="/classifieds" element={<Classifieds />} />
                   <Route path="/post-classified" element={<PostClassified />} />
                   <Route path="/features" element={<Features />} />

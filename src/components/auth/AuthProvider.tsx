@@ -9,6 +9,7 @@ interface AuthContextType {
   session: Session | null;
   signOut: () => Promise<void>;
   isLoading: boolean;
+  isError: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +20,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -26,9 +28,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let mounted = true;
 
-    // Initialize session
     const initSession = async () => {
       try {
+        setIsLoading(true);
+        setIsError(false);
+
         // Get initial session
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw sessionError;
@@ -49,9 +53,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
               setUser(null);
               setSession(null);
               navigate('/login');
+              toast({
+                title: "Signed out successfully",
+              });
             } else if (event === 'SIGNED_IN' && currentSession) {
               const returnTo = location.state?.from || '/dashboard';
               navigate(returnTo);
+              toast({
+                title: "Signed in successfully",
+                description: `Welcome back${currentSession.user.email ? `, ${currentSession.user.email}` : ''}!`,
+              });
             }
           }
         });
@@ -62,11 +73,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         };
       } catch (error: any) {
         console.error('Auth error:', error);
-        toast({
-          variant: "destructive",
-          title: "Authentication Error",
-          description: error.message || "Failed to initialize session",
-        });
+        if (mounted) {
+          setIsError(true);
+          toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: error.message || "Failed to initialize session",
+          });
+        }
       } finally {
         if (mounted) {
           setIsLoading(false);
@@ -75,14 +89,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     initSession();
-
-    return () => {
-      mounted = false;
-    };
   }, [navigate, location.state, toast]);
 
   useEffect(() => {
-    if (!isLoading && !user && protectedRoutes.includes(location.pathname)) {
+    if (!isLoading && !user && protectedRoutes.some(route => location.pathname.startsWith(route))) {
       toast({
         variant: "destructive",
         title: "Authentication required",
@@ -113,11 +123,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     session,
     signOut,
     isLoading,
+    isError,
   };
+
+  if (isError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Authentication Error</h2>
+          <p className="text-gray-600 mb-4">There was a problem initializing the authentication system.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {isLoading ? (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };
