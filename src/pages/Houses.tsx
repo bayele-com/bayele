@@ -7,12 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import HouseCard from "@/components/houses/HouseCard";
 import SearchFilters from "@/components/houses/SearchFilters";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import ContactDialog from "@/components/houses/ContactDialog";
 
 interface ContactInfo {
   phone?: string;
@@ -74,7 +69,6 @@ const Houses = () => {
   const [selectedHouseId, setSelectedHouseId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // For development, we'll use sample data instead of the actual query
   const { data: houses, isLoading } = useQuery({
     queryKey: ['houses', location, priceRange, propertyType],
     queryFn: async () => {
@@ -165,33 +159,12 @@ const Houses = () => {
         )}
       </main>
 
-      <Dialog open={!!selectedHouseId} onOpenChange={() => setSelectedHouseId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedHouse?.title}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p className="text-gray-600">
-              Contact information:
-            </p>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              {selectedHouse?.contact_info && (
-                <>
-                  {selectedHouse.contact_info.whatsapp && (
-                    <Button
-                      className="w-full"
-                      onClick={() => window.open(`https://wa.me/${selectedHouse.contact_info.whatsapp}`, '_blank')}
-                    >
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Contact via WhatsApp
-                    </Button>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ContactDialog
+        isOpen={!!selectedHouseId}
+        onOpenChange={() => setSelectedHouseId(null)}
+        title={selectedHouse?.title}
+        contactInfo={selectedHouse?.contact_info}
+      />
 
       <Footer />
     </div>
