@@ -8,59 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import HouseCard from "@/components/houses/HouseCard";
 import SearchFilters from "@/components/houses/SearchFilters";
 import ContactDialog from "@/components/houses/ContactDialog";
-
-interface ContactInfo {
-  phone?: string;
-  email?: string;
-  whatsapp?: string;
-}
-
-interface HouseData {
-  id: string;
-  title: string;
-  location: string | null;
-  price: number;
-  image_urls: string[] | null;
-  subcategory: string | null;
-  contact_info: ContactInfo;
-}
-
-// Sample data for development
-const sampleListings: HouseData[] = [
-  {
-    id: "1",
-    title: "Modern Studio Apartment in Bastos",
-    location: "Bastos, Yaoundé",
-    price: 150000,
-    image_urls: ["https://images.unsplash.com/photo-1524230572899-a752b3835840"],
-    subcategory: "studio",
-    contact_info: {
-      whatsapp: "+237670000001",
-    }
-  },
-  {
-    id: "2",
-    title: "Spacious 3-Bedroom House in Bonanjo",
-    location: "Bonanjo, Douala",
-    price: 300000,
-    image_urls: ["https://images.unsplash.com/photo-1487958449943-2429e8be8625"],
-    subcategory: "house",
-    contact_info: {
-      whatsapp: "+237670000002",
-    }
-  },
-  {
-    id: "3",
-    title: "Cozy Single Room in Mvan",
-    location: "Mvan, Yaoundé",
-    price: 45000,
-    image_urls: ["https://images.unsplash.com/photo-1721322800607-8c38375eef04"],
-    subcategory: "room",
-    contact_info: {
-      whatsapp: "+237670000003",
-    }
-  },
-];
+import type { RentalProperty } from "@/types/house";
 
 const Houses = () => {
   const [location, setLocation] = useState("");
@@ -72,32 +20,45 @@ const Houses = () => {
   const { data: houses, isLoading } = useQuery({
     queryKey: ['houses', location, priceRange, propertyType],
     queryFn: async () => {
-      // In development, return filtered sample data
-      let filteredHouses = [...sampleListings];
-      
+      let query = supabase
+        .from('rental_properties')
+        .select(`
+          *,
+          neighborhood:neighborhoods(name, city)
+        `)
+        .eq('status', 'available');
+
       if (location) {
-        filteredHouses = filteredHouses.filter(house => 
-          house.location?.toLowerCase().includes(location.toLowerCase())
-        );
+        query = query.eq('city', location);
       }
 
       if (propertyType) {
-        filteredHouses = filteredHouses.filter(house => 
-          house.subcategory === propertyType
-        );
+        query = query.eq('property_type', propertyType);
       }
 
       if (priceRange) {
         const [min, max] = priceRange.split('-').map(Number);
-        filteredHouses = filteredHouses.filter(house => {
-          if (max) {
-            return house.price >= min && house.price <= max;
-          }
-          return house.price >= min;
-        });
+        if (max) {
+          query = query.gte('price', min).lte('price', max);
+        } else {
+          query = query.gte('price', min);
+        }
       }
 
-      return filteredHouses;
+      const { data, error } = await query;
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error loading properties",
+          description: "Please try again later",
+        });
+        throw error;
+      }
+
+      return data as (RentalProperty & {
+        neighborhood: { name: string; city: string };
+      })[];
     }
   });
 
@@ -148,10 +109,10 @@ const Houses = () => {
                 key={house.id}
                 id={house.id}
                 title={house.title}
-                location={house.location || ""}
-                price={Number(house.price)}
+                location={house.neighborhood.name}
+                price={house.price}
                 imageUrl={house.image_urls?.[0]}
-                propertyType={house.subcategory || ""}
+                propertyType={house.property_type}
                 onContactClick={handleContactClick}
               />
             ))}

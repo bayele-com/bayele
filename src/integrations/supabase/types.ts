@@ -246,6 +246,27 @@ export type Database = {
           },
         ]
       }
+      districts: {
+        Row: {
+          city: Database["public"]["Enums"]["city_name"]
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          city: Database["public"]["Enums"]["city_name"]
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          city?: Database["public"]["Enums"]["city_name"]
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       link_analytics: {
         Row: {
           click_timestamp: string | null
@@ -283,6 +304,38 @@ export type Database = {
             columns: ["link_id"]
             isOneToOne: false
             referencedRelation: "affiliate_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      neighborhoods: {
+        Row: {
+          city: Database["public"]["Enums"]["city_name"]
+          created_at: string
+          district_id: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          city: Database["public"]["Enums"]["city_name"]
+          created_at?: string
+          district_id?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          city?: Database["public"]["Enums"]["city_name"]
+          created_at?: string
+          district_id?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "neighborhoods_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
             referencedColumns: ["id"]
           },
         ]
@@ -542,6 +595,74 @@ export type Database = {
         }
         Relationships: []
       }
+      rental_properties: {
+        Row: {
+          address: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          city: Database["public"]["Enums"]["city_name"]
+          contact_info: Json
+          created_at: string
+          description: string
+          features: Json | null
+          id: string
+          image_urls: string[] | null
+          neighborhood_id: string
+          price: number
+          property_type: string
+          status: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city: Database["public"]["Enums"]["city_name"]
+          contact_info?: Json
+          created_at?: string
+          description: string
+          features?: Json | null
+          id?: string
+          image_urls?: string[] | null
+          neighborhood_id: string
+          price: number
+          property_type: string
+          status?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city?: Database["public"]["Enums"]["city_name"]
+          contact_info?: Json
+          created_at?: string
+          description?: string
+          features?: Json | null
+          id?: string
+          image_urls?: string[] | null
+          neighborhood_id?: string
+          price?: number
+          property_type?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rental_properties_neighborhood_id_fkey"
+            columns: ["neighborhood_id"]
+            isOneToOne: false
+            referencedRelation: "neighborhoods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       affiliate_earnings_summary: {
@@ -585,9 +706,13 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      insert_neighborhoods: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
+      city_name: "Yaounde" | "Douala"
       user_type: "affiliate" | "business" | "user" | "admin"
     }
     CompositeTypes: {

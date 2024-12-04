@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import type { City } from "@/types/house";
 
 interface SearchFiltersProps {
   location: string;
@@ -35,9 +36,9 @@ const SearchFilters = ({
   setPropertyType,
   onSearch,
 }: SearchFiltersProps) => {
-  const cities = [
-    { value: "yaounde", label: "Yaoundé" },
-    { value: "douala", label: "Douala" },
+  const cities: { value: City; label: string }[] = [
+    { value: "Yaounde", label: "Yaoundé" },
+    { value: "Douala", label: "Douala" },
   ];
 
   const propertyTypes = [
