@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -25,14 +25,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useProtectedRoute(user, isLoading);
 
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, currentSession) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/login');
+        toast({
+          title: "Signed out",
+          description: "You have been signed out successfully",
+        });
+      } else if (event === 'SIGNED_IN' && currentSession) {
+        const returnTo = localStorage.getItem('returnTo') || '/dashboard';
+        localStorage.removeItem('returnTo');
+        navigate(returnTo);
+        toast({
+          title: "Welcome back",
+          description: `Signed in as ${currentSession.user.email}`,
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
       navigate("/");
-      toast({
-        title: "Signed out successfully",
-      });
     } catch (error: any) {
+      console.error('Sign out error:', error);
       toast({
         variant: "destructive",
         title: "Error signing out",
@@ -41,21 +63,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const value = {
-    user,
-    session,
-    signOut,
-    isLoading,
-    isError,
-  };
-
   if (isError) {
     return <AuthError />;
   }
 
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <AuthContext.Provider value={value}>
-      {isLoading ? <LoadingScreen /> : children}
+    <AuthContext.Provider value={{ user, session, signOut, isLoading, isError }}>
+      {children}
     </AuthContext.Provider>
   );
 };
